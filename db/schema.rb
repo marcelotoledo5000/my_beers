@@ -10,9 +10,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 2018_11_04_173703) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "beers", force: :cascade do |t|
+    t.string "name"
+    t.bigint "style_id"
+    t.string "abv"
+    t.string "ibu"
+    t.string "nationality"
+    t.string "brewery"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["style_id"], name: "index_beers_on_style_id"
+  end
+
+  create_table "pubs", force: :cascade do |t|
+    t.string "name"
+    t.string "country"
+    t.string "state", limit: 2
+    t.string "city"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "styles", force: :cascade do |t|
+    t.string "name"
+    t.string "school_brewery"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "beers", "styles"
 end
