@@ -32,6 +32,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 group :development, :test do
   gem 'database_cleaner'
   gem 'factory_bot_rails', '~> 4.11', '>= 4.11.1'
+  gem 'faker', '~> 1.9', '>= 1.9.1'
   gem 'pry-byebug', '~> 3.6'
   gem 'rails-controller-testing'
   gem 'rspec-rails', '~> 3.8', '>= 3.8.1'

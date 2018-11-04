@@ -1,0 +1,2 @@
+class PubsController < ApplicationController
+end
