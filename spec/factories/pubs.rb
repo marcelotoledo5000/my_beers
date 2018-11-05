@@ -6,9 +6,3 @@ FactoryBot.define do
     city { Faker::Address.city }
   end
 end
-
-# Use to seed
-# name { 'Delirium Cafe' }
-# country { 'Belgium' }
-# state { 'BE' }
-# city { 'Brussels' }

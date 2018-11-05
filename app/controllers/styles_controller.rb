@@ -1,5 +1,5 @@
 class StylesController < ApplicationController
-  before_action :set_style, only: [:show, :update, :destroy]
+  before_action :set_style, only: %i[show update destroy]
 
   # GET /styles
   def index
@@ -18,17 +18,17 @@ class StylesController < ApplicationController
     json_response(@style, :created)
   end
 
-    # PUT /styles/:id
-    def update
-      @style.update(style_params)
-      head :no_content
-    end
+  # PUT /styles/:id
+  def update
+    @style.update(style_params)
+    head :no_content
+  end
 
-    # DELETE /styles/:id
-    def destroy
-      @style.destroy
-      head :no_content
-    end
+  # DELETE /styles/:id
+  def destroy
+    @style.destroy
+    head :no_content
+  end
 
   private
 
