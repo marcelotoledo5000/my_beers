@@ -42,7 +42,7 @@ RSpec.describe 'Styles', type: :request do
       end
 
       it 'returns a not found message' do
-        expect(response.body).to match /Couldn't find Style/
+        expect(response.body).to match(/Couldn't find Style/)
       end
     end
   end
@@ -114,7 +114,7 @@ RSpec.describe 'Styles', type: :request do
       end
 
       it 'returns a not found message' do
-        expect(response.body).to match /Couldn't find Style/
+        expect(response.body).to match(/Couldn't find Style/)
       end
     end
   end
