@@ -1,4 +1,5 @@
 class PubsController < ApplicationController
+  before_action :authenticate
   before_action :set_pub, only: %i[show update destroy]
 
   # GET /pubs
@@ -33,7 +34,7 @@ class PubsController < ApplicationController
   private
 
   def pub_params
-    params.permit(:name, :country, :state, :city)
+    params.permit(:name, :country, :state, :city, :user_id)
   end
 
   def set_pub

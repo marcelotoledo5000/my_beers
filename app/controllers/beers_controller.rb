@@ -1,4 +1,5 @@
 class BeersController < ApplicationController
+  before_action :authenticate
   before_action :set_beer, only: %i[show update destroy]
 
   # GET /beers
@@ -33,7 +34,8 @@ class BeersController < ApplicationController
   private
 
   def beer_params
-    params.permit(:name, :style_id, :abv, :ibu, :nationality, :brewery, :description)
+    params.permit(:name, :style_id, :abv, :ibu, :nationality, :brewery,
+                  :description, :user_id)
   end
 
   def set_beer

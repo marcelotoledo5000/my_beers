@@ -6,10 +6,11 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-german_style = Style.create(name: 'German-Style Schwarzbier', school_brewery: 'German School')
-belgian_style = Style.create(name: 'Belgian-Style Dark Strong Ale', school_brewery: 'Belgian School')
-english_style = Style.create(name: 'Robust Porter', school_brewery: 'British School')
-american_style = Style.create(name: 'American-Style Double India Pale Ale', school_brewery: 'American School')
+user = User.create(email: 'meu@email.com', password: '12345678')
+german_style = Style.create(name: 'German-Style Schwarzbier', school_brewery: 'German School', user_id: user.id)
+belgian_style = Style.create(name: 'Belgian-Style Dark Strong Ale', school_brewery: 'Belgian School', user_id: user.id)
+english_style = Style.create(name: 'Robust Porter', school_brewery: 'British School', user_id: user.id)
+american_style = Style.create(name: 'American-Style Double India Pale Ale', school_brewery: 'American School', user_id: user.id)
 
 Beer.create([
   {

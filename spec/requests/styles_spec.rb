@@ -1,12 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe 'Styles', type: :request do
+  let!(:admin) { create(:user, email: 'admin@email.com', password: '12345678') }
   let!(:styles) { create_list(:style, 10) }
   let(:style_id) { styles.first.id }
 
   # Test suite for GET /styles (index)
   describe 'GET /styles' do
-    before { get '/styles' }
+    before do
+      # Note `basic_credentials` is a custom helper to credentials request
+      get '/styles', headers: basic_credentials('admin@email.com', '12345678')
+    end
 
     it 'returns styles' do
       # Note `json` is a custom helper to parse JSON responses
@@ -21,7 +25,10 @@ RSpec.describe 'Styles', type: :request do
 
   # Test suite for GET /styles/:id (show)
   describe 'GET /styles/:id' do
-    before { get "/styles/#{style_id}" }
+    before do
+      get "/styles/#{style_id}",
+          headers: basic_credentials('admin@email.com', '12345678')
+    end
 
     context 'when the record exists' do
       it 'returns the style' do
@@ -51,11 +58,18 @@ RSpec.describe 'Styles', type: :request do
   describe 'POST /styles' do
     # valid payload
     let(:valid_attributes) do
-      { name: 'German-Style Schwarzbier', school_brewery: 'German' }
+      {
+        name: 'German-Style Schwarzbier', school_brewery: 'German',
+        user_id: admin.id
+      }
     end
 
     context 'when the request is valid' do
-      before { post '/styles', params: valid_attributes }
+      before do
+        post '/styles',
+             params: valid_attributes,
+             headers: basic_credentials('admin@email.com', '12345678')
+      end
 
       it 'creates a style' do
         expect(json['name']).to eq 'German-Style Schwarzbier'
@@ -68,7 +82,11 @@ RSpec.describe 'Styles', type: :request do
     end
 
     context 'when the request is invalid' do
-      before { post '/styles', params: { name: 'Foobar' } }
+      before do
+        post '/styles',
+             params: { name: 'Foobar' },
+             headers: basic_credentials('admin@email.com', '12345678')
+      end
 
       it 'returns status code 422' do
         expect(response).to have_http_status :unprocessable_entity
@@ -76,7 +94,19 @@ RSpec.describe 'Styles', type: :request do
 
       it 'returns a validation failure message' do
         expect(response.body)
-          .to match(/Validation failed: School brewery can't be blank/)
+          .to match(/Validation failed: User must exist, School brewery can't/)
+      end
+    end
+
+    context 'when the user is unauthorized' do
+      before do
+        post '/styles',
+             params: valid_attributes,
+             headers: basic_credentials('user@email.com', '00000000')
+      end
+
+      it 'returns status code 401' do
+        expect(response).to have_http_status :unauthorized
       end
     end
   end
@@ -86,7 +116,11 @@ RSpec.describe 'Styles', type: :request do
     let(:valid_attributes) { { name: Faker::Beer.style } }
 
     context 'when the record exists' do
-      before { put "/styles/#{style_id}", params: valid_attributes }
+      before do
+        put "/styles/#{style_id}",
+            params: valid_attributes,
+            headers: basic_credentials('admin@email.com', '12345678')
+      end
 
       it 'updates the record' do
         expect(response.body).to be_empty
@@ -100,7 +134,10 @@ RSpec.describe 'Styles', type: :request do
 
   # Test suite for DELETE /styles/:id (destroy)
   describe 'DELETE /styles/:id' do
-    before { delete "/styles/#{style_id}" }
+    before do
+      delete "/styles/#{style_id}",
+             headers: basic_credentials('admin@email.com', '12345678')
+    end
 
     it 'returns status code 204' do
       expect(response).to have_http_status :no_content

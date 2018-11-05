@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_04_173703) do
+ActiveRecord::Schema.define(version: 2018_11_05_215718) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,7 +25,9 @@ ActiveRecord::Schema.define(version: 2018_11_04_173703) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["style_id"], name: "index_beers_on_style_id"
+    t.index ["user_id"], name: "index_beers_on_user_id"
   end
 
   create_table "pubs", force: :cascade do |t|
@@ -35,6 +37,8 @@ ActiveRecord::Schema.define(version: 2018_11_04_173703) do
     t.string "city"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_pubs_on_user_id"
   end
 
   create_table "styles", force: :cascade do |t|
@@ -42,7 +46,19 @@ ActiveRecord::Schema.define(version: 2018_11_04_173703) do
     t.string "school_brewery"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_styles_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email"
+    t.string "password"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "beers", "styles"
+  add_foreign_key "beers", "users"
+  add_foreign_key "pubs", "users"
+  add_foreign_key "styles", "users"
 end

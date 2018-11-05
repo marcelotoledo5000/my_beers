@@ -1,4 +1,5 @@
 class StylesController < ApplicationController
+  before_action :authenticate
   before_action :set_style, only: %i[show update destroy]
 
   # GET /styles
@@ -33,7 +34,7 @@ class StylesController < ApplicationController
   private
 
   def style_params
-    params.permit(:name, :school_brewery)
+    params.permit(:name, :school_brewery, :user_id)
   end
 
   def set_style
