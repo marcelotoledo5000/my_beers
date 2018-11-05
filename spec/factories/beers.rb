@@ -7,5 +7,6 @@ FactoryBot.define do
     nationality { Faker::Nation.nationality }
     brewery { Faker::Company.buzzword }
     description { Faker::WorldOfWarcraft.quote }
+    user
   end
 end

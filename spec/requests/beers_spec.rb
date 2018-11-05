@@ -1,12 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe 'Beers', type: :request do
+  let!(:admin) { create(:user, email: 'admin@email.com', password: '12345678') }
   let!(:beers) { create_list(:beer, 10) }
   let(:beer_id) { beers.first.id }
 
   # Test suite for GET /beers (index)
   describe 'GET /beers' do
-    before { get '/beers' }
+    # Note `basic_credentials` is a custom helper to credentials request
+    before do
+      get '/beers', headers: basic_credentials('admin@email.com', '12345678')
+    end
 
     it 'returns beers' do
       # Note `json` is a custom helper to parse JSON responses
@@ -21,7 +25,10 @@ RSpec.describe 'Beers', type: :request do
 
   # Test suite for GET /beers/:id (show)
   describe 'GET /beers/:id' do
-    before { get "/beers/#{beer_id}" }
+    before do
+      get "/beers/#{beer_id}",
+          headers: basic_credentials('admin@email.com', '12345678')
+    end
 
     context 'when the record exists' do
       it 'returns the beer' do
@@ -49,25 +56,30 @@ RSpec.describe 'Beers', type: :request do
 
   # Test suite for POST /beers (create)
   describe 'POST /beers' do
-    context 'when the request is valid' do
-      let!(:style) do
-        create(:style, name: 'American-Style Imperial Stout',
-                       school_brewery: 'American')
-      end
-      # valid payload
-      let(:valid_attributes) do
-        {
-          name: 'KBS',
-          style_id: style.id,
-          abv: '11.9%',
-          ibu: '70',
-          nationality: 'American',
-          brewery: 'Founders',
-          description: 'What we’ve got here is an imperial stout brewed with a massive amount of coffee and chocolates, then cave-aged in oak bourbon barrels for an entire year to make sure wonderful bourbon undertones come through in the finish.'
-        }
-      end
+    let!(:style) do
+      create(:style,
+             name: 'American-Style Imperial Stout',
+             school_brewery: 'American', user_id: admin.id)
+    end
+    # valid payload
+    let(:valid_attributes) do
+      {
+        name: 'KBS',
+        style_id: style.id,
+        user_id: admin.id,
+        abv: '11.9%',
+        ibu: '70',
+        nationality: 'American',
+        brewery: 'Founders',
+        description: 'What we’ve got here is an imperial stout brewed with a massive amount of coffee and chocolates, then cave-aged in oak bourbon barrels for an entire year to make sure wonderful bourbon undertones come through in the finish.'
+      }
+    end
 
-      before { post '/beers', params: valid_attributes }
+    context 'when the request is valid' do
+      before do
+        post '/beers', params: valid_attributes,
+                       headers: basic_credentials('admin@email.com', '12345678')
+      end
 
       it 'creates a beer' do
         expect(json['name']).to eq 'KBS'
@@ -84,7 +96,11 @@ RSpec.describe 'Beers', type: :request do
     end
 
     context 'when the request is invalid' do
-      before { post '/beers', params: { name: 'Foobar' } }
+      before do
+        post '/beers',
+             params: { name: 'Foobar' },
+             headers: basic_credentials('admin@email.com', '12345678')
+      end
 
       it 'returns status code 422' do
         expect(response).to have_http_status :unprocessable_entity
@@ -92,7 +108,19 @@ RSpec.describe 'Beers', type: :request do
 
       it 'returns a validation failure message' do
         expect(response.body)
-          .to match(/Validation failed: Style must exist, Abv can't be blank/)
+          .to match(/Validation failed: Style must exist, User must exist/)
+      end
+    end
+
+    context 'when the user is unauthorized' do
+      before do
+        post '/beers',
+             params: valid_attributes,
+             headers: basic_credentials('user@email.com', '00000000')
+      end
+
+      it 'returns status code 401' do
+        expect(response).to have_http_status :unauthorized
       end
     end
   end
@@ -102,7 +130,11 @@ RSpec.describe 'Beers', type: :request do
     let(:valid_attributes) { { name: Faker::Beer.name } }
 
     context 'when the record exists' do
-      before { put "/beers/#{beer_id}", params: valid_attributes }
+      before do
+        put "/beers/#{beer_id}",
+            params: valid_attributes,
+            headers: basic_credentials('admin@email.com', '12345678')
+      end
 
       it 'updates the record' do
         expect(response.body).to be_empty
@@ -116,7 +148,10 @@ RSpec.describe 'Beers', type: :request do
 
   # Test suite for DELETE /beers/:id (destroy)
   describe 'DELETE /beers/:id' do
-    before { delete "/beers/#{beer_id}" }
+    before do
+      delete "/beers/#{beer_id}",
+             headers: basic_credentials('admin@email.com', '12345678')
+    end
 
     it 'returns status code 204' do
       expect(response).to have_http_status :no_content
