@@ -1,13 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe 'Styles', type: :request do
-  let!(:styles) { create_list(:style, 10) }
   let!(:admin) { create(:user, email: 'admin@email.com', password: '12345678') }
+  let!(:styles) { create_list(:style, 10) }
   let(:style_id) { styles.first.id }
 
   # Test suite for GET /styles (index)
   describe 'GET /styles' do
     before do
+      # Note `basic_credentials` is a custom helper to credentials request
       get '/styles', headers: basic_credentials('admin@email.com', '12345678')
     end
 
