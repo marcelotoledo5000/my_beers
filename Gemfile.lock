@@ -55,6 +55,7 @@ GEM
     brakeman (4.3.1)
     builder (3.2.3)
     byebug (10.0.2)
+    cancancan (2.3.0)
     codeclimate-engine-rb (0.4.1)
       virtus (~> 1.0)
     coderay (1.1.2)
@@ -250,6 +251,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap (>= 1.1.0)
   brakeman
+  cancancan (~> 2.3)
   database_cleaner
   factory_bot_rails (~> 4.11, >= 4.11.1)
   faker (~> 1.9, >= 1.9.1)

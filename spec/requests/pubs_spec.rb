@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'Pubs', type: :request do
-  let!(:admin) { create(:user, email: 'admin@email.com', password: '12345678') }
+  let!(:guest) do
+    create(:user, email: 'guest@email.com', password: '12345678', role: 'guest')
+  end
   let!(:pubs) { create_list(:pub, 10) }
   let(:pub_id) { pubs.first.id }
 
@@ -9,7 +11,7 @@ RSpec.describe 'Pubs', type: :request do
   describe 'GET /pubs' do
     before do
       # Note `basic_credentials` is a custom helper to credentials request
-      get '/pubs', headers: basic_credentials('admin@email.com', '12345678')
+      get '/pubs', headers: basic_credentials('guest@email.com', '12345678')
     end
 
     it 'returns pubs' do
@@ -27,7 +29,7 @@ RSpec.describe 'Pubs', type: :request do
   describe 'GET /pubs/:id' do
     before do
       get "/pubs/#{pub_id}",
-          headers: basic_credentials('admin@email.com', '12345678')
+          headers: basic_credentials('guest@email.com', '12345678')
     end
 
     context 'when the record exists' do
@@ -56,11 +58,15 @@ RSpec.describe 'Pubs', type: :request do
 
   # Test suite for POST /pubs (create)
   describe 'POST /pubs' do
+    let!(:user) do
+      create(:user, email: 'default@email.com', password: '12345678',
+                    role: 'default')
+    end
     # valid payload
     let(:valid_attributes) do
       {
         name: 'Delirium Cafe', country: 'Belgium', state: 'BE',
-        city: 'Brussels', user_id: admin.id
+        city: 'Brussels', user_id: user.id
       }
     end
 
@@ -68,7 +74,7 @@ RSpec.describe 'Pubs', type: :request do
       before do
         post '/pubs',
              params: valid_attributes,
-             headers: basic_credentials('admin@email.com', '12345678')
+             headers: basic_credentials('default@email.com', '12345678')
       end
 
       it 'creates a pub' do
@@ -87,7 +93,7 @@ RSpec.describe 'Pubs', type: :request do
       before do
         post '/pubs',
              params: { name: 'Foobar' },
-             headers: basic_credentials('admin@email.com', '12345678')
+             headers: basic_credentials('default@email.com', '12345678')
       end
 
       it 'returns status code 422' do
@@ -104,7 +110,7 @@ RSpec.describe 'Pubs', type: :request do
       before do
         post '/pubs',
              params: valid_attributes,
-             headers: basic_credentials('user@email.com', '00000000')
+             headers: basic_credentials('guest@email.com', '00000000')
       end
 
       it 'returns status code 401' do
@@ -117,11 +123,14 @@ RSpec.describe 'Pubs', type: :request do
   describe 'PUT /pubs/:id' do
     let(:valid_attributes) { { name: Faker::Beer.name } }
 
-    context 'when the record exists' do
+    context 'when user is owner' do
       before do
-        put "/pubs/#{pub_id}",
+        pub = Pub.first
+        owner = User.find pub.user_id
+
+        put "/pubs/#{pub.id}",
             params: valid_attributes,
-            headers: basic_credentials('admin@email.com', '12345678')
+            headers: basic_credentials(owner.email, owner.password)
       end
 
       it 'updates the record' do
@@ -136,6 +145,11 @@ RSpec.describe 'Pubs', type: :request do
 
   # Test suite for DELETE /pubs/:id (destroy)
   describe 'DELETE /pubs/:id' do
+    let!(:admin) do
+      create(:user, email: 'admin@email.com', password: '12345678',
+                    role: 'admin')
+    end
+
     before do
       delete "/pubs/#{pub_id}",
              headers: basic_credentials('admin@email.com', '12345678')

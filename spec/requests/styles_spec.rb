@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'Styles', type: :request do
-  let!(:admin) { create(:user, email: 'admin@email.com', password: '12345678') }
+  let!(:guest) do
+    create(:user, email: 'guest@email.com', password: '12345678', role: 'guest')
+  end
   let!(:styles) { create_list(:style, 10) }
   let(:style_id) { styles.first.id }
 
@@ -9,7 +11,7 @@ RSpec.describe 'Styles', type: :request do
   describe 'GET /styles' do
     before do
       # Note `basic_credentials` is a custom helper to credentials request
-      get '/styles', headers: basic_credentials('admin@email.com', '12345678')
+      get '/styles', headers: basic_credentials('guest@email.com', '12345678')
     end
 
     it 'returns styles' do
@@ -27,7 +29,7 @@ RSpec.describe 'Styles', type: :request do
   describe 'GET /styles/:id' do
     before do
       get "/styles/#{style_id}",
-          headers: basic_credentials('admin@email.com', '12345678')
+          headers: basic_credentials('guest@email.com', '12345678')
     end
 
     context 'when the record exists' do
@@ -56,11 +58,15 @@ RSpec.describe 'Styles', type: :request do
 
   # Test suite for POST /styles (create)
   describe 'POST /styles' do
+    let!(:user) do
+      create(:user, email: 'user@email.com', password: '12345678',
+                    role: 'default')
+    end
     # valid payload
     let(:valid_attributes) do
       {
         name: 'German-Style Schwarzbier', school_brewery: 'German',
-        user_id: admin.id
+        user_id: user.id
       }
     end
 
@@ -68,7 +74,7 @@ RSpec.describe 'Styles', type: :request do
       before do
         post '/styles',
              params: valid_attributes,
-             headers: basic_credentials('admin@email.com', '12345678')
+             headers: basic_credentials('user@email.com', '12345678')
       end
 
       it 'creates a style' do
@@ -85,7 +91,7 @@ RSpec.describe 'Styles', type: :request do
       before do
         post '/styles',
              params: { name: 'Foobar' },
-             headers: basic_credentials('admin@email.com', '12345678')
+             headers: basic_credentials('user@email.com', '12345678')
       end
 
       it 'returns status code 422' do
@@ -102,7 +108,7 @@ RSpec.describe 'Styles', type: :request do
       before do
         post '/styles',
              params: valid_attributes,
-             headers: basic_credentials('user@email.com', '00000000')
+             headers: basic_credentials('other@email.com', '00000000')
       end
 
       it 'returns status code 401' do
@@ -117,9 +123,11 @@ RSpec.describe 'Styles', type: :request do
 
     context 'when the record exists' do
       before do
-        put "/styles/#{style_id}",
+        style = Style.first
+        owner = User.find style.user_id
+        put "/styles/#{style.id}",
             params: valid_attributes,
-            headers: basic_credentials('admin@email.com', '12345678')
+            headers: basic_credentials(owner.email, owner.password)
       end
 
       it 'updates the record' do
@@ -134,6 +142,11 @@ RSpec.describe 'Styles', type: :request do
 
   # Test suite for DELETE /styles/:id (destroy)
   describe 'DELETE /styles/:id' do
+    let!(:admin) do
+      create(:user, email: 'admin@email.com', password: '12345678',
+                    role: 'admin')
+    end
+
     before do
       delete "/styles/#{style_id}",
              headers: basic_credentials('admin@email.com', '12345678')
