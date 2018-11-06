@@ -6,7 +6,9 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-user = User.create(email: 'meu@email.com', password: '12345678')
+guest = User.create(email: 'guest@email.com', password: '12345678', role: 0)
+user = User.create(email: 'user@email.com', password: '12345678', role: 1)
+admin = User.create(email: 'admin@email.com', password: '12345678', role: 2)
 german_style = Style.create(name: 'German-Style Schwarzbier', school_brewery: 'German School', user_id: user.id)
 belgian_style = Style.create(name: 'Belgian-Style Dark Strong Ale', school_brewery: 'Belgian School', user_id: user.id)
 english_style = Style.create(name: 'Robust Porter', school_brewery: 'British School', user_id: user.id)
@@ -16,6 +18,7 @@ Beer.create([
   {
     name: 'Köstritzer Schwarzbier',
     style_id: german_style.id,
+    user_id: user.id,
     abv: '4.8%',
     ibu: '22',
     nationality: 'Germany',
@@ -25,6 +28,7 @@ Beer.create([
   {
     name: 'Chimay Blue',
     style_id: belgian_style.id,
+    user_id: user.id,
     abv: '9%',
     ibu: '35',
     nationality: 'Belgian',
@@ -34,6 +38,7 @@ Beer.create([
   {
     name: "Monk's Habit Robust Porter",
     style_id: english_style.id,
+    user_id: user.id,
     abv: '6.5%',
     ibu: '30',
     nationality: 'Canadian',
@@ -43,6 +48,7 @@ Beer.create([
   {
     name: 'KBS',
     style_id: american_style.id,
+    user_id: user.id,
     abv: '11.9%',
     ibu: '70',
     nationality: 'American',
@@ -56,18 +62,21 @@ Pub.create([
     name: 'Delirium Cafe',
     country: 'Belgium',
     state: 'BE',
-    city: 'Brussels'
+    city: 'Brussels',
+    user_id: admin.id
   },
   {
     name: 'Brewdog',
     country: 'Belgium',
     state: 'BE',
-    city: 'Brussels'
+    city: 'Brussels',
+    user_id: admin.id
   },
   {
     name: 'EAP',
     country: 'Brazil',
     state: 'SP',
-    city: 'Sao Paulo'
+    city: 'Sao Paulo',
+    user_id: admin.id
   }
 ])

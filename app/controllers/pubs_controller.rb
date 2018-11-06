@@ -1,6 +1,6 @@
 class PubsController < ApplicationController
-  before_action :authenticate
   before_action :set_pub, only: %i[show update destroy]
+  authorize_resource
 
   # GET /pubs
   def index

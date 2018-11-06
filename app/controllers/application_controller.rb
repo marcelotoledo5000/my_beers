@@ -3,9 +3,15 @@ class ApplicationController < ActionController::API
   include Response
   include ExceptionHandler
 
+  before_action :authenticate
+
+  private
+
+  attr_reader :current_user
+
   def authenticate
     return if authenticate_with_http_basic do |user, pass|
-      User.find_by(email: user, password: pass)
+      @current_user = User.find_by(email: user, password: pass)
     end
 
     head :unauthorized

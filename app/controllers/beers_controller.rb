@@ -1,6 +1,6 @@
 class BeersController < ApplicationController
-  before_action :authenticate
   before_action :set_beer, only: %i[show update destroy]
+  authorize_resource
 
   # GET /beers
   def index

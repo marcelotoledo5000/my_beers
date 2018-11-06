@@ -1,6 +1,6 @@
 class StylesController < ApplicationController
-  before_action :authenticate
   before_action :set_style, only: %i[show update destroy]
+  authorize_resource
 
   # GET /styles
   def index
