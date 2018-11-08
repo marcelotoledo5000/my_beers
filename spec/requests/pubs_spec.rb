@@ -145,30 +145,64 @@ RSpec.describe 'Pubs', type: :request do
 
   # Test suite for DELETE /pubs/:id (destroy)
   describe 'DELETE /pubs/:id' do
-    let!(:admin) do
-      create(:user, email: 'admin@email.com', password: '12345678',
-                    role: 'admin')
-    end
-
-    before do
-      delete "/pubs/#{pub_id}",
-             headers: basic_credentials('admin@email.com', '12345678')
-    end
-
-    it 'returns status code 204' do
-      expect(response).to have_http_status :no_content
-    end
-
-    context 'when the record does not exist' do
-      let(:pub_id) { 100 }
-
-      it 'returns status code 404' do
-        expect(response).to have_http_status :not_found
+    context 'when the user is admin' do
+      let!(:admin) do
+        create(:user, email: 'admin@email.com', password: '12345678',
+                      role: 'admin')
       end
 
-      it 'returns a not found message' do
-        expect(response.body)
-          .to match(/Couldn't find Pub with/)
+      before do
+        delete "/pubs/#{pub_id}",
+               headers: basic_credentials('admin@email.com', '12345678')
+      end
+
+      it 'returns status code 204' do
+        expect(response).to have_http_status :no_content
+      end
+
+      context 'when the record does not exist' do
+        let(:pub_id) { 100 }
+
+        it 'returns status code 404' do
+          expect(response).to have_http_status :not_found
+        end
+
+        it 'returns a not found message' do
+          expect(response.body)
+            .to match(/Couldn't find Pub with/)
+        end
+      end
+    end
+
+    context 'when the user is owner' do
+      let!(:user) do
+        create(:user, email: 'user@email.com', password: '12345678',
+                      role: 'default')
+      end
+
+      before do
+        pub = Pub.first
+        owner = User.find pub.user_id
+
+        delete "/pubs/#{pub_id}",
+               headers: basic_credentials(owner.email, owner.password)
+      end
+
+      it 'returns status code 204' do
+        expect(response).to have_http_status :no_content
+      end
+
+      context 'when the record does not exist' do
+        let(:pub_id) { 100 }
+
+        it 'returns status code 404' do
+          expect(response).to have_http_status :not_found
+        end
+
+        it 'returns a not found message' do
+          expect(response.body)
+            .to match(/Couldn't find Pub with/)
+        end
       end
     end
   end

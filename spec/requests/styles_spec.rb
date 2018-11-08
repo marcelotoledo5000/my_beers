@@ -142,29 +142,61 @@ RSpec.describe 'Styles', type: :request do
 
   # Test suite for DELETE /styles/:id (destroy)
   describe 'DELETE /styles/:id' do
-    let!(:admin) do
-      create(:user, email: 'admin@email.com', password: '12345678',
-                    role: 'admin')
-    end
-
-    before do
-      delete "/styles/#{style_id}",
-             headers: basic_credentials('admin@email.com', '12345678')
-    end
-
-    it 'returns status code 204' do
-      expect(response).to have_http_status :no_content
-    end
-
-    context 'when the record does not exist' do
-      let(:style_id) { 100 }
-
-      it 'returns status code 404' do
-        expect(response).to have_http_status :not_found
+    context 'when the user is admin' do
+      let!(:admin) do
+        create(:user, email: 'admin@email.com', password: '12345678',
+                      role: 'admin')
       end
 
-      it 'returns a not found message' do
-        expect(response.body).to match(/Couldn't find Style/)
+      before do
+        delete "/styles/#{style_id}",
+               headers: basic_credentials('admin@email.com', '12345678')
+      end
+
+      it 'returns status code 204' do
+        expect(response).to have_http_status :no_content
+      end
+
+      context 'when the record does not exist' do
+        let(:style_id) { 100 }
+
+        it 'returns status code 404' do
+          expect(response).to have_http_status :not_found
+        end
+
+        it 'returns a not found message' do
+          expect(response.body).to match(/Couldn't find Style/)
+        end
+      end
+    end
+
+    context 'when the user is owner' do
+      let!(:user) do
+        create(:user, email: 'user@email.com', password: '12345678',
+                      role: 'default')
+      end
+
+      before do
+        style = Style.first
+        owner = User.find style.user_id
+        delete "/styles/#{style_id}",
+               headers: basic_credentials(owner.email, owner.password)
+      end
+
+      it 'returns status code 204' do
+        expect(response).to have_http_status :no_content
+      end
+
+      context 'when the record does not exist' do
+        let(:style_id) { 100 }
+
+        it 'returns status code 404' do
+          expect(response).to have_http_status :not_found
+        end
+
+        it 'returns a not found message' do
+          expect(response.body).to match(/Couldn't find Style/)
+        end
       end
     end
   end
