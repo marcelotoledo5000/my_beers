@@ -150,6 +150,8 @@ RSpec.describe 'Beers', type: :request do
 
       it 'updates the record' do
         expect(response.body).to be_empty
+        beer.reload
+        expect(beer.name).to eq new_beer_name
       end
 
       it 'returns status code 204' do
@@ -216,6 +218,7 @@ RSpec.describe 'Beers', type: :request do
 
       it 'returns status code 204' do
         expect(response).to have_http_status :no_content
+        expect { beer.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
@@ -223,7 +226,7 @@ RSpec.describe 'Beers', type: :request do
       let!(:user) { create(:user, password: '12345678', role: 'default') }
 
       before do
-        delete "/beers/5000",
+        delete '/beers/5000',
                headers: basic_credentials(user.email, user.password)
       end
 

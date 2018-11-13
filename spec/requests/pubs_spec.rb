@@ -121,13 +121,16 @@ RSpec.describe 'Pubs', type: :request do
 
   # Test suite for PUT /pubs/:id (update)
   describe 'PUT /pubs/:id' do
-    let(:valid_attributes) { { name: Faker::Beer.name } }
+    let!(:owner) do
+      create(:user, email: Faker::Internet.email, password: '12345678',
+                    role: 'default')
+    end
+    let(:pub) { create(:pub, user: owner) }
+    let(:new_pub_name) { Faker::LordOfTheRings.location }
+    let(:valid_attributes) { { name: new_pub_name } }
 
     context 'when user is owner' do
       before do
-        pub = Pub.first
-        owner = User.find pub.user_id
-
         put "/pubs/#{pub.id}",
             params: valid_attributes,
             headers: basic_credentials(owner.email, owner.password)
@@ -135,10 +138,25 @@ RSpec.describe 'Pubs', type: :request do
 
       it 'updates the record' do
         expect(response.body).to be_empty
+        pub.reload
+        expect(pub.name).to eq new_pub_name
       end
 
       it 'returns status code 204' do
         expect(response).to have_http_status :no_content
+      end
+    end
+
+    context 'when user is unauthorized' do
+      let(:user) { create(:user, password: '12345678', role: 'default') }
+      let(:pub) { create(:pub) }
+      let(:request) do
+        delete "/pubs/#{pub.id}",
+               headers: basic_credentials(user.email, user.password)
+      end
+
+      it 'returns AccessDenied' do
+        expect { request }.to raise_error(CanCan::AccessDenied)
       end
     end
   end
@@ -175,25 +193,29 @@ RSpec.describe 'Pubs', type: :request do
     end
 
     context 'when the user is owner' do
-      let!(:user) do
-        create(:user, email: 'user@email.com', password: '12345678',
+      let!(:owner) do
+        create(:user, email: Faker::Internet.email, password: '12345678',
                       role: 'default')
       end
+      let(:pub) { create(:pub, user: owner) }
 
       before do
-        pub = Pub.first
-        owner = User.find pub.user_id
-
-        delete "/pubs/#{pub_id}",
+        delete "/pubs/#{pub.id}",
                headers: basic_credentials(owner.email, owner.password)
       end
 
       it 'returns status code 204' do
         expect(response).to have_http_status :no_content
+        expect { pub.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
       context 'when the record does not exist' do
-        let(:pub_id) { 100 }
+        let!(:user) { create(:user, password: '12345678', role: 'default') }
+
+        before do
+          delete '/pubs/5000',
+                 headers: basic_credentials(user.email, user.password)
+        end
 
         it 'returns status code 404' do
           expect(response).to have_http_status :not_found
