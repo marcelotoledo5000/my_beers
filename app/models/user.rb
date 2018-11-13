@@ -3,7 +3,9 @@ class User < ApplicationRecord
   has_many :pubs, dependent: :destroy
   has_many :styles, dependent: :destroy
 
-  validates :email, :password, presence: true
+  has_secure_password
+
+  validates :email, presence: true, uniqueness: true
 
   enum role: %i[guest default admin]
 end

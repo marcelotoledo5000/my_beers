@@ -133,17 +133,16 @@ RSpec.describe 'Beers', type: :request do
 
   # Test suite for PUT /beers/:id (update)
   describe 'PUT /beers/:id' do
-    let!(:user) do
-      create(:user, email: 'user@email.com', password: '12345678',
+    let!(:owner) do
+      create(:user, email: Faker::Internet.email, password: '12345678',
                     role: 'default')
     end
-    let(:valid_attributes) { { name: Faker::Beer.name } }
+    let(:beer) { create(:beer, user: owner) }
+    let(:new_beer_name) { Faker::Beer.name }
+    let(:valid_attributes) { { name: new_beer_name } }
 
     context 'when the record exists' do
       before do
-        beer = Beer.first
-        owner = User.find beer.user_id
-
         put "/beers/#{beer.id}",
             params: valid_attributes,
             headers: basic_credentials(owner.email, owner.password)
@@ -151,10 +150,25 @@ RSpec.describe 'Beers', type: :request do
 
       it 'updates the record' do
         expect(response.body).to be_empty
+        beer.reload
+        expect(beer.name).to eq new_beer_name
       end
 
       it 'returns status code 204' do
         expect(response).to have_http_status :no_content
+      end
+    end
+
+    context 'when user is unauthorized' do
+      let(:user) { create(:user, password: '12345678', role: 'default') }
+      let(:beer) { create(:beer) }
+      let(:request) do
+        delete "/beers/#{beer.id}",
+               headers: basic_credentials(user.email, user.password)
+      end
+
+      it 'returns AccessDenied' do
+        expect { request }.to raise_error(CanCan::AccessDenied)
       end
     end
   end
@@ -191,34 +205,38 @@ RSpec.describe 'Beers', type: :request do
     end
 
     context 'when the user is owner' do
-      let!(:user) do
-        create(:user, email: 'user@email.com', password: '12345678',
+      let!(:owner) do
+        create(:user, email: Faker::Internet.email, password: '12345678',
                       role: 'default')
       end
+      let(:beer) { create(:beer, user: owner) }
 
       before do
-        beer = Beer.first
-        owner = User.find beer.user_id
-
-        delete "/beers/#{beer_id}",
+        delete "/beers/#{beer.id}",
                headers: basic_credentials(owner.email, owner.password)
       end
 
       it 'returns status code 204' do
         expect(response).to have_http_status :no_content
+        expect { beer.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when the record does not exist' do
+      let!(:user) { create(:user, password: '12345678', role: 'default') }
+
+      before do
+        delete '/beers/5000',
+               headers: basic_credentials(user.email, user.password)
       end
 
-      context 'when the record does not exist' do
-        let(:beer_id) { 100 }
+      it 'returns status code 404' do
+        expect(response).to have_http_status :not_found
+      end
 
-        it 'returns status code 404' do
-          expect(response).to have_http_status :not_found
-        end
-
-        it 'returns a not found message' do
-          expect(response.body)
-            .to match(/Couldn't find Beer with/)
-        end
+      it 'returns a not found message' do
+        expect(response.body)
+          .to match(/Couldn't find Beer with/)
       end
     end
   end

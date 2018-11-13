@@ -119,12 +119,16 @@ RSpec.describe 'Styles', type: :request do
 
   # Test suite for PUT /styles/:id (update)
   describe 'PUT /styles/:id' do
-    let(:valid_attributes) { { name: Faker::Beer.style } }
+    let!(:owner) do
+      create(:user, email: Faker::Internet.email, password: '12345678',
+                    role: 'default')
+    end
+    let(:style) { create(:style, user: owner) }
+    let(:new_style_name) { Faker::Beer.style }
+    let(:valid_attributes) { { name: new_style_name } }
 
     context 'when the record exists' do
       before do
-        style = Style.first
-        owner = User.find style.user_id
         put "/styles/#{style.id}",
             params: valid_attributes,
             headers: basic_credentials(owner.email, owner.password)
@@ -132,10 +136,25 @@ RSpec.describe 'Styles', type: :request do
 
       it 'updates the record' do
         expect(response.body).to be_empty
+        style.reload
+        expect(style.name).to eq new_style_name
       end
 
       it 'returns status code 204' do
         expect(response).to have_http_status :no_content
+      end
+    end
+
+    context 'when user is unauthorized' do
+      let(:user) { create(:user, password: '12345678', role: 'default') }
+      let(:style) { create(:style) }
+      let(:request) do
+        delete "/styles/#{style.id}",
+               headers: basic_credentials(user.email, user.password)
+      end
+
+      it 'returns AccessDenied' do
+        expect { request }.to raise_error(CanCan::AccessDenied)
       end
     end
   end
@@ -171,24 +190,29 @@ RSpec.describe 'Styles', type: :request do
     end
 
     context 'when the user is owner' do
-      let!(:user) do
-        create(:user, email: 'user@email.com', password: '12345678',
+      let!(:owner) do
+        create(:user, email: Faker::Internet.email, password: '12345678',
                       role: 'default')
       end
+      let(:style) { create(:style, user: owner) }
 
       before do
-        style = Style.first
-        owner = User.find style.user_id
-        delete "/styles/#{style_id}",
+        delete "/styles/#{style.id}",
                headers: basic_credentials(owner.email, owner.password)
       end
 
       it 'returns status code 204' do
         expect(response).to have_http_status :no_content
+        expect { style.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
       context 'when the record does not exist' do
-        let(:style_id) { 100 }
+        let!(:user) { create(:user, password: '12345678', role: 'default') }
+
+        before do
+          delete '/styles/5000',
+                 headers: basic_credentials(user.email, user.password)
+        end
 
         it 'returns status code 404' do
           expect(response).to have_http_status :not_found

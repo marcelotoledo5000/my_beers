@@ -11,7 +11,7 @@ class ApplicationController < ActionController::API
 
   def authenticate
     return if authenticate_with_http_basic do |user, pass|
-      @current_user = User.find_by(email: user, password: pass)
+      @current_user = User.find_by(email: user).try(:authenticate, pass)
     end
 
     head :unauthorized
