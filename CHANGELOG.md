@@ -1,4 +1,11 @@
-# my_beers 0.0.13 (Jun 02, 2019)
+# my_beers 0.0.14 (Jun 03, 2019)
+
+* Readme updated to use travis-ci.com instead of travis-ci.org
+* Set cache to build on travis.yml
+
+  *Marcelo Toledo*
+
+## my_beers 0.0.13 (Jun 02, 2019)
 
 * Github security alert digest
   * Fixed security vulnerabilities
