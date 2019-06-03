@@ -19,8 +19,8 @@ AllCops:
     - 'vendor/**/*.rb'
     - 'vendor/**/*'
   UseCache: false
-  TargetRailsVersion: 5.2
-  TargetRubyVersion: 2.5
+  TargetRailsVersion: 6.0
+  TargetRubyVersion: 2.6
 Metrics/BlockLength:
   ExcludedMethods: ['describe', 'context', 'feature', 'scenario', 'let']
 Style/FrozenStringLiteralComment:
