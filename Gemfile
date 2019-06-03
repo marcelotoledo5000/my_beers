@@ -5,12 +5,10 @@ ruby '2.6.3'
 
 gem 'bcrypt', '~> 3.1', '>= 3.1.13'
 gem 'bootsnap', '~> 1.4', '>= 1.4.4'
-# gem 'cancancan', '~> 2.3'
 gem 'cancancan', '~> 3.0', '>= 3.0.1'
 gem 'kaminari', '~> 1.1', '>= 1.1.1'
 gem 'pg', '~> 1.1', '>= 1.1.4'
 gem 'puma', '~> 3.12', '>= 3.12.1'
-# gem 'rails', '~> 5.2.1'
 gem 'rails', '~> 6.0.0.rc1'
 
 group :development, :test do
