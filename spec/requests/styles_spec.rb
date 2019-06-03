@@ -99,8 +99,8 @@ RSpec.describe 'Styles', type: :request do
       end
 
       it 'returns a validation failure message' do
-        expect(response.body)
-          .to match(/Validation failed: User must exist, School brewery can't/)
+        expect(response.body).
+          to match(/Validation failed: User must exist, School brewery can't/)
       end
     end
 

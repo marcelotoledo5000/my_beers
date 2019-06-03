@@ -1,13 +1,11 @@
+require: rubocop-performance
+
 Documentation:
   Enabled: false
 Rails:
   Enabled: true
 
 AllCops:
-  Include:
-    - '**/Rakefile'
-    - '**/Gemfile'
-    - '**/config.ru'
   Exclude:
     - 'db/**/*'
     - 'Rakefile'
@@ -25,3 +23,7 @@ Metrics/BlockLength:
   ExcludedMethods: ['describe', 'context', 'feature', 'scenario', 'let']
 Style/FrozenStringLiteralComment:
   Enabled: false
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+Layout/DotPosition:
+  EnforcedStyle: trailing
