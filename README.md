@@ -1,6 +1,6 @@
 # **MyBeers**
 
-[![Build Status](https://travis-ci.org/marcelotoledo5000/my_beers.svg?branch=master)](https://travis-ci.org/marcelotoledo5000/my_beers)
+[![Build Status](https://travis-ci.com/marcelotoledo5000/my_beers.svg?branch=master)](https://travis-ci.com/marcelotoledo5000/my_beers)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ae4ce2a36d05fb5fcabf/maintainability)](https://codeclimate.com/github/marcelotoledo5000/my_beers/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ae4ce2a36d05fb5fcabf/test_coverage)](https://codeclimate.com/github/marcelotoledo5000/my_beers/test_coverage)
 
