@@ -6,7 +6,7 @@ FactoryBot.define do
     ibu { Faker::Beer.ibu }
     nationality { Faker::Nation.nationality }
     brewery { Faker::Company.buzzword }
-    description { Faker::WorldOfWarcraft.quote }
+    description { Faker::Games::WorldOfWarcraft.quote }
     user
   end
 end

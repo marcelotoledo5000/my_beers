@@ -126,7 +126,7 @@ RSpec.describe 'Pubs', type: :request do
                     role: 'default')
     end
     let(:pub) { create(:pub, user: owner) }
-    let(:new_pub_name) { Faker::LordOfTheRings.location }
+    let(:new_pub_name) { Faker::Movies::LordOfTheRings.location }
     let(:valid_attributes) { { name: new_pub_name } }
 
     context 'when user is owner' do
