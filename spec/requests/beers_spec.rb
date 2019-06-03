@@ -4,7 +4,7 @@ RSpec.describe 'Beers', type: :request do
   let!(:guest) do
     create(:user, email: 'guest@email.com', password: '12345678', role: 'guest')
   end
-  let!(:beers) { create_list(:beer, 10) }
+  let!(:beers) { create_list(:beer, 15) }
   let(:beer_id) { beers.first.id }
 
   # Test suite for GET /beers (index)

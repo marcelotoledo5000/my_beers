@@ -4,7 +4,7 @@ class StylesController < ApplicationController
 
   # GET /styles
   def index
-    @styles = Style.all
+    @styles = Style.page params[:page]
     json_response(@styles)
   end
 
