@@ -1,4 +1,5 @@
-version: '3'
+version: '3.6'
+
 services:
   db:
     image: postgres
@@ -6,7 +7,7 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
   server:
-    image: skygvinn/debian-ruby-nodejs
+    image: skygvinn/debian-ruby2.6-nodejs:v1.1
     container_name: my_beers
     ports:
       - "3000:3000"

@@ -4,7 +4,7 @@ class BeersController < ApplicationController
 
   # GET /beers
   def index
-    @beers = Beer.all
+    @beers = Beer.page params[:page]
     json_response(@beers)
   end
 

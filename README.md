@@ -1,153 +1,366 @@
+# **MyBeers**
+
 [![Build Status](https://travis-ci.org/marcelotoledo5000/my_beers.svg?branch=master)](https://travis-ci.org/marcelotoledo5000/my_beers)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ae4ce2a36d05fb5fcabf/maintainability)](https://codeclimate.com/github/marcelotoledo5000/my_beers/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ae4ce2a36d05fb5fcabf/test_coverage)](https://codeclimate.com/github/marcelotoledo5000/my_beers/test_coverage)
 
-<h3>This project uses:</h3>
+## About this project
 
-* The Ruby language - version 2.5.1
-* The Rails gem - version 5.2.1
-* RSpec: 3.8.1
-* Rubocop: 0.60
+This project is a example to use:
 
-<h4>To use:</h4>
+- Is a Rails Application API-only. This API gives 3 resources:
+  - Pubs
+  - Beers
+  - Styles
+- Secured by HTTP Basic Authentication
+- User mode, with different roles (admin, user, guest)
+- CRUD
+- Limit access to given part of API depending on User role:
+  - Admin has access to everything
+  - User can read all, create all, but update and deleted only his records
+  - Guest has only read access
+
+## Technical Informations and dependencies
+
+``` code
+* The Ruby language   # version 2.6.3
+* The Rails gem       # version 6.0.0.rc1
+* Capybara:           # version 3.22
+* RSpec               # version 3.8.3
+* Rubocop             # version 0.71.0
+* PostgreSQL          # version 10
+* Docker              # version 18.09.5
+* Docker Compose      # version 1.24.0
+```
+
+## To use
 
 Clone the project:
 
-<pre>
-$ git clone git@github.com:marcelotoledo5000/my_beers.git
-$ cd my_beers
-</pre>
+``` Shell
+git clone git@github.com:marcelotoledo5000/my_beers.git
+cd my_beers
+```
 
-<h4>With Docker:</h4>
+### With Docker (better option)
 
-- Needs to update `database.yml` to:
-<pre>
-# host: localhost  # when using localhost
-host: db  # when using docker
-</pre>
+``` Shell
+script/setup    # => development bootstrap, preparing containers
+script/server   # => starts server
+script/console  # => starts console
+script/test     # => running tests
+```
 
-<pre>
-$ script/setup # => development bootstrap, preparing containers
-$ script/server # => starts server
-$ script/console # => starts console
-$ script/test # => running tests
-</pre>
+#### Running without Docker (not recommended!)
 
-<h4>Running Local:</h4>
+If you prefer, you'll need to update `config/database.yml`:
 
-<h6>System dependencies:</h6>
+``` Yaml
+# host: db        # when using docker
+host: localhost   # when using localhost
+```
 
-* Install and configure the database: [Postgresql-10](https://www.postgresql.org/download/)
+System dependencies
 
-- Needs to update `database.yml` to:
-<pre>
-host: localhost  # when using localhost
-# host: db  # when using docker
-</pre>
+- Install and configure the database: [Postgresql-10](https://www.postgresql.org/download/)
 
-<pre>
-$ bundle install
-$ rails db:setup
-</pre>
+And then:
 
-<h4>To run the tests</h4>
+``` Shell
+gem install bundler         # => install the last Bundler version
+bundle install              # => install the project's gems
+rails db:setup db:migrate   # => prepare the database
+rails s                     # => starts server
+rails c                     # => starts console
+bundle exec rspec           # => to running tests
+```
 
-<pre>
-$ bundle exec rspec
-</pre>
+### To run app
 
-<h4>To run app</h4>
+To see the application in action, starts the rails server to able [http://localhost:3000/](http://localhost:3000.)
 
-To check that application runs properly by entering the command:
+### Dockerfile
 
-<pre>
-$ bundle exec rails server
-</pre>
+[Dockerfile is here](https://github.com/marcelotoledo5000/Dockerfiles)
 
-To see the application in action, starts the rails server to able [http://localhost:3000/](http://localhost:3000.) => DOMAIN
+### API Documentation
 
-<h3>More about this project:</h3>
+#### Authentication
 
-Is a Rails application API-only. This API gives 3 resources:
-- Pubs
-- Beers
-- Styles
+- Needs to use HTTP Basic Authentication.
 
-Authentication:
-- HTTP Basic Authentication (user = email, pass = password)
+The format of a WWW-Authenticate header for HTTP basic authentication is:
 
-User mode - with different roles (admin, user, guest).
+```code
+WWW-Authenticate: Basic realm="Our Site"
+```
 
-Endpoints:
+#### Domain
 
-<h5>To Pubs:</5>
-<pre>
+[http://localhost:3000/](http://localhost:3000)
+Header with: user = email, pass = password
+
+#### Endpoints
+
+##### PUBS
+
 INDEX
+
+```code
 GET: http://DOMAIN/pubs
-curl -u "admin@email.com:12345678" "http://localhost:3000/pubs"
-</pre>
-<pre>
+"http://localhost:3000/pubs"
+```
+
+Response:
+
+```code
+200 Ok
+```
+
 SHOW
-GET: http://DOMAIN/pubs/:id
-curl -u "admin@email.com:12345678" "http://localhost:3000/pubs/:id"
-</pre>
-<pre>
+
+```code
+GET: http://DOMAIN/pubs/ID
+"http://localhost:3000/pubs/1"
+```
+
+Response:
+
+```code
+200 Ok
+```
+
 CREATE
+
+```code
 POST: http://DOMAIN/pubs
-</pre>
-<pre>
-UPDATE
-PUT: http://DOMAIN/pubs/:id
-</pre>
-<pre>
-DESTROY
-DELETE: http://DOMAIN/pubs/:id
-</pre>
+"http://localhost:3000/pubs"
+Params: Body, JSON(application/json)
+```
 
-<h5>To Styles:</5>
-<pre>
+```json
+{
+  "name": "Delirium Cafe",
+  "country": "Belgium",
+  "state": "BE",
+  "city": "Brussels",
+  "user_id": 1
+}
+```
+
+Response:
+
+```code
+201 Created
+```
+
+UPDATE
+
+```code
+PUT: http://DOMAIN/pubs/ID
+"http://localhost:3000/pubs/1"
+Params: Body, JSON(application/json)
+```
+
+```json
+{
+  "name": "BrewDog"
+}
+```
+
+Response:
+
+```code
+204 No Content
+```
+
+DESTROY
+
+```code
+DELETE: http://DOMAIN/pubs/ID
+"http://localhost:3000/pubs/2"
+```
+
+Response:
+
+```code
+204 No Content
+```
+
+##### STYLES
+
 INDEX
+
+```code
 GET: http://DOMAIN/styles
-curl -u "admin@email.com:12345678" "http://localhost:3000/styles"
-</pre>
-<pre>
-SHOW
-GET: http://DOMAIN/styles/:id
-curl -u "admin@email.com:12345678" "http://localhost:3000/styles/:id"
-</pre>
-<pre>
-CREATE
-POST: http://DOMAIN/styles
-</pre>
-<pre>
-UPDATE
-PUT: http://DOMAIN/styles/:id
-</pre>
-<pre>
-DESTROY
-DELETE: http://DOMAIN/styles/:id
-</pre>
+"http://localhost:3000/styles"
+```
 
-<h5>To Beers:</5>
-<pre>
-INDEX
-GET: http://DOMAIN/beers
-curl -u "admin@email.com:12345678" "http://localhost:3000/beers"
-</pre>
-<pre>
+Response:
+
+```code
+200 Ok
+```
+
 SHOW
-GET: http://DOMAIN/beers/:id
-curl -u "admin@email.com:12345678" "http://localhost:3000/beers/:id"
-</pre>
-<pre>
+
+```code
+GET: http://DOMAIN/styles/ID
+"http://localhost:3000/styles/1"
+```
+
+Response:
+
+```code
+200 Ok
+```
+
 CREATE
-POST: http://DOMAIN/beers
-</pre>
-<pre>
+
+```code
+POST: http://DOMAIN/styles
+"http://localhost:3000/styles"
+Params: Body, JSON(application/json)
+```
+
+```json
+{
+  "name": "German-Style Schwarzbier",
+  "school_brewery": "German",
+  "user_id": 1
+}
+```
+
+Response:
+
+```code
+201 Created
+```
+
 UPDATE
-PUT: http://DOMAIN/beers/:id
-</pre>
-<pre>
+
+```code
+PUT: http://DOMAIN/styles/ID
+"http://localhost:3000/styles/1"
+Params: Body, JSON(application/json)
+```
+
+```json
+{
+  "name": "German-Style Weizenbock"
+}
+```
+
+Response:
+
+```code
+204 No Content
+```
+
 DESTROY
-DELETE: http://DOMAIN/beers/:id
-</pre>
+
+```code
+DELETE: http://DOMAIN/styles/ID
+"http://localhost:3000/styles/2"
+```
+
+Response:
+
+```code
+204 No Content
+```
+
+##### BEERS
+
+INDEX
+
+```code
+GET: http://DOMAIN/beers
+"http://localhost:3000/beers"
+```
+
+Response:
+
+```code
+200 Ok
+```
+
+SHOW
+
+```code
+GET: http://DOMAIN/beers/ID
+"http://localhost:3000/beers/1"
+```
+
+Response:
+
+```code
+200 Ok
+```
+
+CREATE
+
+```code
+POST: http://DOMAIN/beers
+"http://localhost:3000/beers"
+Params: Body, JSON(application/json)
+```
+
+```json
+{
+  "name": "KBS 2016",
+  "style_id": 5,
+  "user_id": 1,
+  "abv": "11.9%",
+  "ibu": "70",
+  "nationality": "American",
+  "brewery": "Founders",
+  "description": "The best Imperial Stout of World"
+}
+```
+
+Response:
+
+```code
+201 Created
+```
+
+UPDATE
+
+```code
+PUT: http://DOMAIN/beers/ID
+"http://localhost:3000/beers/1"
+Params: Body, JSON(application/json)
+```
+
+```json
+{
+  "brewery": "Founders Brewing Co"
+}
+```
+
+Response:
+
+```code
+204 No Content
+```
+
+DESTROY
+
+```code
+DELETE: http://DOMAIN/beers/ID
+"http://localhost:3000/beers/2"
+```
+
+Response:
+
+```code
+204 No Content
+```
+
+### Pending Actions
+
+- Use JSON API format response
+- Build a CRUD web app (with login) that consumes the API
+- Change http basic auth to JWT
+- Deploy on Heroku (both apps: back-end and front-end)

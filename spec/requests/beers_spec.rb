@@ -4,7 +4,7 @@ RSpec.describe 'Beers', type: :request do
   let!(:guest) do
     create(:user, email: 'guest@email.com', password: '12345678', role: 'guest')
   end
-  let!(:beers) { create_list(:beer, 10) }
+  let!(:beers) { create_list(:beer, 15) }
   let(:beer_id) { beers.first.id }
 
   # Test suite for GET /beers (index)
@@ -58,6 +58,12 @@ RSpec.describe 'Beers', type: :request do
 
   # Test suite for POST /beers (create)
   describe 'POST /beers' do
+    let(:msg) do
+      'What we’ve got here is an imperial stout brewed with a massive amount
+      of coffee and chocolates, then cave-aged in oak bourbon barrels for an
+      entire year to make sure wonderful bourbon undertones come through in
+      the finish.'
+    end
     let!(:user) do
       create(:user, email: 'user@email.com', password: '12345678',
                     role: 'default')
@@ -77,7 +83,7 @@ RSpec.describe 'Beers', type: :request do
         ibu: '70',
         nationality: 'American',
         brewery: 'Founders',
-        description: 'What we’ve got here is an imperial stout brewed with a massive amount of coffee and chocolates, then cave-aged in oak bourbon barrels for an entire year to make sure wonderful bourbon undertones come through in the finish.'
+        description: msg
       }
     end
 
@@ -93,7 +99,7 @@ RSpec.describe 'Beers', type: :request do
         expect(json['ibu']).to eq '70'
         expect(json['nationality']).to eq 'American'
         expect(json['brewery']).to eq 'Founders'
-        expect(json['description']).to eq 'What we’ve got here is an imperial stout brewed with a massive amount of coffee and chocolates, then cave-aged in oak bourbon barrels for an entire year to make sure wonderful bourbon undertones come through in the finish.'
+        expect(json['description']).to eq msg
       end
 
       it 'returns status code 201' do
@@ -113,8 +119,8 @@ RSpec.describe 'Beers', type: :request do
       end
 
       it 'returns a validation failure message' do
-        expect(response.body)
-          .to match(/Validation failed: Style must exist, User must exist/)
+        expect(response.body).
+          to match(/Validation failed: Style must exist, User must exist/)
       end
     end
 
@@ -198,8 +204,8 @@ RSpec.describe 'Beers', type: :request do
         end
 
         it 'returns a not found message' do
-          expect(response.body)
-            .to match(/Couldn't find Beer with/)
+          expect(response.body).
+            to match(/Couldn't find Beer with/)
         end
       end
     end
@@ -235,8 +241,8 @@ RSpec.describe 'Beers', type: :request do
       end
 
       it 'returns a not found message' do
-        expect(response.body)
-          .to match(/Couldn't find Beer with/)
+        expect(response.body).
+          to match(/Couldn't find Beer with/)
       end
     end
   end

@@ -8,13 +8,7 @@ class Ability
       can :manage, :all
     else
       can :read, :all
-      if user.default?
-        can_create
-
-        can_update(user)
-
-        can_destroy(user)
-      end
+      can_execute(user) if user.default?
     end
   end
 
@@ -48,5 +42,11 @@ class Ability
     can :update, Beer do |beer|
       beer&.user == user # beer.try(:user)
     end
+  end
+
+  def can_execute(user)
+    can_create
+    can_update(user)
+    can_destroy(user)
   end
 end

@@ -4,7 +4,7 @@ class PubsController < ApplicationController
 
   # GET /pubs
   def index
-    @pubs = Pub.all
+    @pubs = Pub.page params[:page]
     json_response(@pubs)
   end
 
