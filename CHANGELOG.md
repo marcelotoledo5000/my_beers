@@ -1,4 +1,13 @@
-# my_beers 0.0.14 (Jun 03, 2019)
+# my_beers 0.0.15 (Dec 29, 2019)
+
+* Upgrade Ruby version
+* Bump a lot of gems
+* Fix travis.yml
+* Fix rubocop.yml
+
+  *Marcelo Toledo*
+
+## my_beers 0.0.14 (Jun 03, 2019)
 
 * Readme updated to use travis-ci.com instead of travis-ci.org
 * Set cache to build on travis.yml

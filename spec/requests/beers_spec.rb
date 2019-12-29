@@ -1,16 +1,20 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Beers', type: :request do
-  let!(:guest) do
+  before do
     create(:user, email: 'guest@email.com', password: '12345678', role: 'guest')
   end
-  let!(:beers) { create_list(:beer, 15) }
+
+  let(:beers) { create_list(:beer, 15) }
   let(:beer_id) { beers.first.id }
 
   # Test suite for GET /beers (index)
   describe 'GET /beers' do
     # Note `basic_credentials` is a custom helper to credentials request
     before do
+      create_list(:beer, 15)
       get '/beers', headers: basic_credentials('guest@email.com', '12345678')
     end
 
@@ -64,11 +68,11 @@ RSpec.describe 'Beers', type: :request do
       entire year to make sure wonderful bourbon undertones come through in
       the finish.'
     end
-    let!(:user) do
+    let(:user) do
       create(:user, email: 'user@email.com', password: '12345678',
                     role: 'default')
     end
-    let!(:style) do
+    let(:style) do
       create(:style,
              name: 'American-Style Imperial Stout',
              school_brewery: 'American', user_id: user.id)
@@ -111,7 +115,7 @@ RSpec.describe 'Beers', type: :request do
       before do
         post '/beers',
              params: { name: 'Foobar' },
-             headers: basic_credentials('user@email.com', '12345678')
+             headers: basic_credentials(user.email, user.password)
       end
 
       it 'returns status code 422' do
@@ -139,7 +143,7 @@ RSpec.describe 'Beers', type: :request do
 
   # Test suite for PUT /beers/:id (update)
   describe 'PUT /beers/:id' do
-    let!(:owner) do
+    let(:owner) do
       create(:user, email: Faker::Internet.email, password: '12345678',
                     role: 'default')
     end
@@ -182,36 +186,46 @@ RSpec.describe 'Beers', type: :request do
   # Test suite for DELETE /beers/:id (destroy)
   describe 'DELETE /beers/:id' do
     context 'when the user is admin' do
-      let!(:admin) do
+      let(:admin) do
         create(:user, email: 'admin@email.com', password: '12345678',
                       role: 'admin')
       end
 
       before do
         delete "/beers/#{beer_id}",
-               headers: basic_credentials('admin@email.com', '12345678')
+               headers: basic_credentials(admin.email, admin.password)
       end
 
       it 'returns status code 204' do
         expect(response).to have_http_status :no_content
       end
+    end
 
-      context 'when the record does not exist' do
-        let(:beer_id) { 100 }
+    context 'when the record does not exist' do
+      let(:beer_id) { 100 }
 
-        it 'returns status code 404' do
-          expect(response).to have_http_status :not_found
-        end
+      let(:admin) do
+        create(:user, email: 'admin@email.com', password: '12345678',
+                      role: 'admin')
+      end
 
-        it 'returns a not found message' do
-          expect(response.body).
-            to match(/Couldn't find Beer with/)
-        end
+      before do
+        delete "/beers/#{beer_id}",
+               headers: basic_credentials(admin.email, admin.password)
+      end
+
+      it 'returns status code 404' do
+        expect(response).to have_http_status :not_found
+      end
+
+      it 'returns a not found message' do
+        expect(response.body).
+          to match(/Couldn't find Beer with/)
       end
     end
 
     context 'when the user is owner' do
-      let!(:owner) do
+      let(:owner) do
         create(:user, email: Faker::Internet.email, password: '12345678',
                       role: 'default')
       end
@@ -229,7 +243,7 @@ RSpec.describe 'Beers', type: :request do
     end
 
     context 'when the record does not exist' do
-      let!(:user) { create(:user, password: '12345678', role: 'default') }
+      let(:user) { create(:user, password: '12345678', role: 'default') }
 
       before do
         delete '/beers/5000',

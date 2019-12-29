@@ -1,11 +1,12 @@
+# frozen_string_literal: true
+
 class BeersController < ApplicationController
   before_action :set_beer, only: %i[show update destroy]
   authorize_resource
 
   # GET /beers
   def index
-    @beers = Beer.page params[:page]
-    json_response(@beers)
+    Beer.page(params[:page]).then { |beers| json_response(beers) }
   end
 
   # GET /beers/:id
@@ -15,8 +16,7 @@ class BeersController < ApplicationController
 
   # POST /beers
   def create
-    @beer = Beer.create!(beer_params)
-    json_response(@beer, :created)
+    Beer.create!(beer_params).then { |beer| json_response(beer, :created) }
   end
 
   # PUT /beers/:id

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'cancan/matchers'
 
@@ -5,11 +7,10 @@ require 'cancan/matchers'
 # matcher available. This checks if the can? method returns true.
 RSpec.describe Ability, type: :model do
   describe 'abilities' do
-    subject(:ability) { Ability.new(user) }
-    let(:user) { nil }
+    subject(:ability) { described_class.new(user) }
 
     context 'when is an account manager' do
-      let!(:user) do
+      let(:user) do
         create(:user, email: 'user@email.com', password: '12345678',
                       role: 'admin')
       end
@@ -32,7 +33,7 @@ RSpec.describe Ability, type: :model do
     end
 
     context 'when is an account default' do
-      let!(:user) do
+      let(:user) do
         create(:user, email: 'default@email.com', password: '12345678',
                       role: 'default')
       end
@@ -50,7 +51,7 @@ RSpec.describe Ability, type: :model do
     end
 
     context 'when is an account guest' do
-      let!(:user) do
+      let(:user) do
         create(:user, email: 'guest@email.com', password: '12345678',
                       role: 'guest')
       end

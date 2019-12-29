@@ -1,11 +1,12 @@
+# frozen_string_literal: true
+
 class PubsController < ApplicationController
   before_action :set_pub, only: %i[show update destroy]
   authorize_resource
 
   # GET /pubs
   def index
-    @pubs = Pub.page params[:page]
-    json_response(@pubs)
+    Pub.page(params[:page]).then { |pubs| json_response(pubs) }
   end
 
   # GET /pubs/:id
@@ -15,8 +16,7 @@ class PubsController < ApplicationController
 
   # POST /pubs
   def create
-    @pub = Pub.create!(pub_params)
-    json_response(@pub, :created)
+    Pub.create!(pub_params).then { |pub| json_response(pub, :created) }
   end
 
   # PUT /pubs/:id

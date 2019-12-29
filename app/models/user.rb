@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   has_many :beers, dependent: :destroy
   has_many :pubs, dependent: :destroy
@@ -7,5 +9,5 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
 
-  enum role: %i[guest default admin]
+  enum role: { guest: 0, default: 1, admin: 2 }
 end

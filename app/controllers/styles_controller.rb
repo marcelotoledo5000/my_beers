@@ -1,11 +1,12 @@
+# frozen_string_literal: true
+
 class StylesController < ApplicationController
   before_action :set_style, only: %i[show update destroy]
   authorize_resource
 
   # GET /styles
   def index
-    @styles = Style.page params[:page]
-    json_response(@styles)
+    Style.page(params[:page]).then { |styles| json_response(styles) }
   end
 
   # GET /styles/:id
@@ -15,8 +16,7 @@ class StylesController < ApplicationController
 
   # POST /styles
   def create
-    @style = Style.create!(style_params)
-    json_response(@style, :created)
+    Style.create!(style_params).then { |style| json_response(style, :created) }
   end
 
   # PUT /styles/:id
