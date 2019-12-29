@@ -1,7 +1,7 @@
 # my_beers 0.0.15 (Dec 29, 2019)
 
 * Upgrade Ruby version
-* Bump a lot gems
+* Bump a lot of gems
 * Fix travis.yml
 * Fix rubocop.yml
 
