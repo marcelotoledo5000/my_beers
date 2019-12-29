@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Beer, type: :model do
-  it { should belong_to(:style) }
-  it { should belong_to(:user) }
-  it { should validate_presence_of(:name) }
-  it { should validate_presence_of(:abv) }
-  it { should validate_presence_of(:ibu) }
-  it { should validate_presence_of(:nationality) }
-  it { should validate_presence_of(:brewery) }
-  it { should validate_presence_of(:description) }
+  it { is_expected.to belong_to(:style) }
+  it { is_expected.to belong_to(:user) }
+  it { is_expected.to validate_presence_of(:name) }
+  it { is_expected.to validate_presence_of(:abv) }
+  it { is_expected.to validate_presence_of(:ibu) }
+  it { is_expected.to validate_presence_of(:nationality) }
+  it { is_expected.to validate_presence_of(:brewery) }
+  it { is_expected.to validate_presence_of(:description) }
 end

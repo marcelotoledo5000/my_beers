@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Beer < ApplicationRecord
   belongs_to :style
   belongs_to :user

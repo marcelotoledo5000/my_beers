@@ -1,16 +1,20 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Pubs', type: :request do
-  let!(:guest) do
+  before do
     create(:user, email: 'guest@email.com', password: '123456', role: 'guest')
   end
-  let!(:pubs) { create_list(:pub, 15) }
+
+  let(:pubs) { create_list(:pub, 15) }
   let(:pub_id) { pubs.first.id }
 
   # Test suite for GET /pubs (index)
   describe 'GET /pubs' do
+    # Note `basic_credentials` is a custom helper to credentials request
     before do
-      # Note `basic_credentials` is a custom helper to credentials request
+      create_list(:pub, 15)
       get '/pubs', headers: basic_credentials('guest@email.com', '123456')
     end
 
@@ -58,15 +62,18 @@ RSpec.describe 'Pubs', type: :request do
 
   # Test suite for POST /pubs (create)
   describe 'POST /pubs' do
-    let!(:user) do
+    let(:user) do
       create(:user, email: 'default@email.com', password: '123456',
                     role: 'default')
     end
     # valid payload
     let(:valid_attributes) do
       {
-        name: 'Delirium Cafe', country: 'Belgium', state: 'BE',
-        city: 'Brussels', user_id: user.id
+        name: 'Delirium Cafe',
+        country: 'Belgium',
+        state: 'BE',
+        city: 'Brussels',
+        user_id: user.id
       }
     end
 
@@ -74,7 +81,7 @@ RSpec.describe 'Pubs', type: :request do
       before do
         post '/pubs',
              params: valid_attributes,
-             headers: basic_credentials('default@email.com', '123456')
+             headers: basic_credentials(user.email, user.password)
       end
 
       it 'creates a pub' do
@@ -93,7 +100,7 @@ RSpec.describe 'Pubs', type: :request do
       before do
         post '/pubs',
              params: { name: 'Foobar' },
-             headers: basic_credentials('default@email.com', '123456')
+             headers: basic_credentials(user.email, user.password)
       end
 
       it 'returns status code 422' do
@@ -121,7 +128,7 @@ RSpec.describe 'Pubs', type: :request do
 
   # Test suite for PUT /pubs/:id (update)
   describe 'PUT /pubs/:id' do
-    let!(:owner) do
+    let(:owner) do
       create(:user, email: Faker::Internet.email, password: '123456',
                     role: 'default')
     end
@@ -164,36 +171,46 @@ RSpec.describe 'Pubs', type: :request do
   # Test suite for DELETE /pubs/:id (destroy)
   describe 'DELETE /pubs/:id' do
     context 'when the user is admin' do
-      let!(:admin) do
+      let(:admin) do
         create(:user, email: 'admin@email.com', password: '123456',
                       role: 'admin')
       end
 
       before do
         delete "/pubs/#{pub_id}",
-               headers: basic_credentials('admin@email.com', '123456')
+               headers: basic_credentials(admin.email, admin.password)
       end
 
       it 'returns status code 204' do
         expect(response).to have_http_status :no_content
       end
+    end
 
-      context 'when the record does not exist' do
-        let(:pub_id) { 100 }
+    context 'when the record does not exist' do
+      let(:pub_id) { 100 }
 
-        it 'returns status code 404' do
-          expect(response).to have_http_status :not_found
-        end
+      let(:admin) do
+        create(:user, email: 'admin@email.com', password: '123456',
+                      role: 'admin')
+      end
 
-        it 'returns a not found message' do
-          expect(response.body).
-            to match(/Couldn't find Pub with/)
-        end
+      before do
+        delete "/pubs/#{pub_id}",
+               headers: basic_credentials(admin.email, admin.password)
+      end
+
+      it 'returns status code 404' do
+        expect(response).to have_http_status :not_found
+      end
+
+      it 'returns a not found message' do
+        expect(response.body).
+          to match(/Couldn't find Pub with/)
       end
     end
 
     context 'when the user is owner' do
-      let!(:owner) do
+      let(:owner) do
         create(:user, email: Faker::Internet.email, password: '123456',
                       role: 'default')
       end
@@ -208,23 +225,23 @@ RSpec.describe 'Pubs', type: :request do
         expect(response).to have_http_status :no_content
         expect { pub.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
+    end
 
-      context 'when the record does not exist' do
-        let!(:user) { create(:user, password: '123456', role: 'default') }
+    context 'when the record does not exist' do
+      let(:user) { create(:user, password: '123456', role: 'default') }
 
-        before do
-          delete '/pubs/5000',
-                 headers: basic_credentials(user.email, user.password)
-        end
+      before do
+        delete '/pubs/5000',
+               headers: basic_credentials(user.email, user.password)
+      end
 
-        it 'returns status code 404' do
-          expect(response).to have_http_status :not_found
-        end
+      it 'returns status code 404' do
+        expect(response).to have_http_status :not_found
+      end
 
-        it 'returns a not found message' do
-          expect(response.body).
-            to match(/Couldn't find Pub with/)
-        end
+      it 'returns a not found message' do
+        expect(response.body).
+          to match(/Couldn't find Pub with/)
       end
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StylesController < ApplicationController
   before_action :set_style, only: %i[show update destroy]
   authorize_resource

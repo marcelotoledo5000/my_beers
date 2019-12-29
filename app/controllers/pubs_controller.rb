@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PubsController < ApplicationController
   before_action :set_pub, only: %i[show update destroy]
   authorize_resource

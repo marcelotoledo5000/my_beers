@@ -1,16 +1,20 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Styles', type: :request do
-  let!(:guest) do
+  before do
     create(:user, email: 'guest@email.com', password: '12345678', role: 'guest')
   end
-  let!(:styles) { create_list(:style, 15) }
+
+  let(:styles) { create_list(:style, 15) }
   let(:style_id) { styles.first.id }
 
   # Test suite for GET /styles (index)
   describe 'GET /styles' do
+    # Note `basic_credentials` is a custom helper to credentials request
     before do
-      # Note `basic_credentials` is a custom helper to credentials request
+      create_list(:style, 15)
       get '/styles', headers: basic_credentials('guest@email.com', '12345678')
     end
 
@@ -58,14 +62,15 @@ RSpec.describe 'Styles', type: :request do
 
   # Test suite for POST /styles (create)
   describe 'POST /styles' do
-    let!(:user) do
+    let(:user) do
       create(:user, email: 'user@email.com', password: '12345678',
                     role: 'default')
     end
     # valid payload
     let(:valid_attributes) do
       {
-        name: 'German-Style Schwarzbier', school_brewery: 'German',
+        name: 'German-Style Schwarzbier',
+        school_brewery: 'German',
         user_id: user.id
       }
     end
@@ -74,7 +79,7 @@ RSpec.describe 'Styles', type: :request do
       before do
         post '/styles',
              params: valid_attributes,
-             headers: basic_credentials('user@email.com', '12345678')
+             headers: basic_credentials(user.email, user.password)
       end
 
       it 'creates a style' do
@@ -91,7 +96,7 @@ RSpec.describe 'Styles', type: :request do
       before do
         post '/styles',
              params: { name: 'Foobar' },
-             headers: basic_credentials('user@email.com', '12345678')
+             headers: basic_credentials(user.email, user.password)
       end
 
       it 'returns status code 422' do
@@ -119,7 +124,7 @@ RSpec.describe 'Styles', type: :request do
 
   # Test suite for PUT /styles/:id (update)
   describe 'PUT /styles/:id' do
-    let!(:owner) do
+    let(:owner) do
       create(:user, email: Faker::Internet.email, password: '12345678',
                     role: 'default')
     end
@@ -162,35 +167,45 @@ RSpec.describe 'Styles', type: :request do
   # Test suite for DELETE /styles/:id (destroy)
   describe 'DELETE /styles/:id' do
     context 'when the user is admin' do
-      let!(:admin) do
+      let(:admin) do
         create(:user, email: 'admin@email.com', password: '12345678',
                       role: 'admin')
       end
 
       before do
         delete "/styles/#{style_id}",
-               headers: basic_credentials('admin@email.com', '12345678')
+               headers: basic_credentials(admin.email, admin.password)
       end
 
       it 'returns status code 204' do
         expect(response).to have_http_status :no_content
       end
+    end
 
-      context 'when the record does not exist' do
-        let(:style_id) { 100 }
+    context 'when the record does not exist' do
+      let(:style_id) { 100 }
 
-        it 'returns status code 404' do
-          expect(response).to have_http_status :not_found
-        end
+      let(:admin) do
+        create(:user, email: 'admin@email.com', password: '12345678',
+                      role: 'admin')
+      end
 
-        it 'returns a not found message' do
-          expect(response.body).to match(/Couldn't find Style/)
-        end
+      before do
+        delete "/styles/#{style_id}",
+               headers: basic_credentials(admin.email, admin.password)
+      end
+
+      it 'returns status code 404' do
+        expect(response).to have_http_status :not_found
+      end
+
+      it 'returns a not found message' do
+        expect(response.body).to match(/Couldn't find Style/)
       end
     end
 
     context 'when the user is owner' do
-      let!(:owner) do
+      let(:owner) do
         create(:user, email: Faker::Internet.email, password: '12345678',
                       role: 'default')
       end
@@ -205,22 +220,22 @@ RSpec.describe 'Styles', type: :request do
         expect(response).to have_http_status :no_content
         expect { style.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
+    end
 
-      context 'when the record does not exist' do
-        let!(:user) { create(:user, password: '12345678', role: 'default') }
+    context 'when the record does not exist' do
+      let(:user) { create(:user, password: '12345678', role: 'default') }
 
-        before do
-          delete '/styles/5000',
-                 headers: basic_credentials(user.email, user.password)
-        end
+      before do
+        delete '/styles/5000',
+               headers: basic_credentials(user.email, user.password)
+      end
 
-        it 'returns status code 404' do
-          expect(response).to have_http_status :not_found
-        end
+      it 'returns status code 404' do
+        expect(response).to have_http_status :not_found
+      end
 
-        it 'returns a not found message' do
-          expect(response.body).to match(/Couldn't find Style/)
-        end
+      it 'returns a not found message' do
+        expect(response.body).to match(/Couldn't find Style/)
       end
     end
   end
