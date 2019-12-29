@@ -24,25 +24,25 @@ class Ability
 
   def can_destroy(user)
     can :destroy, Pub do |pub|
-      pub.try(:user) == user
+      pub&.user == user
     end
     can :destroy, Style do |style|
-      style.try(:user) == user
+      style&.user == user
     end
     can :destroy, Beer do |beer|
-      beer.try(:user) == user
+      beer&.user == user
     end
   end
 
   def can_update(user)
     can :update, Pub do |pub|
-      pub&.user == user # pub.try(:user)
+      pub&.user == user
     end
     can :update, Style do |style|
-      style&.user == user # style.try(:user)
+      style&.user == user
     end
     can :update, Beer do |beer|
-      beer&.user == user # beer.try(:user)
+      beer&.user == user
     end
   end
 

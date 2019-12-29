@@ -6,8 +6,7 @@ class BeersController < ApplicationController
 
   # GET /beers
   def index
-    @beers = Beer.page params[:page]
-    json_response(@beers)
+    Beer.page(params[:page]).then { |beers| json_response(beers) }
   end
 
   # GET /beers/:id
@@ -17,8 +16,7 @@ class BeersController < ApplicationController
 
   # POST /beers
   def create
-    @beer = Beer.create!(beer_params)
-    json_response(@beer, :created)
+    Beer.create!(beer_params).then { |beer| json_response(beer, :created) }
   end
 
   # PUT /beers/:id
