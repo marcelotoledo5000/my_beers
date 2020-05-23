@@ -1,9 +1,24 @@
-# my_beers 0.0.15 (Dec 29, 2019)
+# my_beers 0.1.0 (May 23, 2020)
 
-* Upgrade Ruby version
+* Upgraded Ruby version from 2.6.5 to 2.7.0
 * Bump a lot of gems
-* Fix travis.yml
-* Fix rubocop.yml
+* Refactored tests
+* Setup Github Actions Workflows
+* Added `dotenv-rails` gem
+* Added and Setup `codecov` gem
+* Updated and Added some badges to README.md
+* Removed CodeClimate: `CC_TEST_REPORTER`
+* Organized and cleaned some files
+* Fixed some issues from CodeClimate
+
+  *Marcelo Toledo*
+
+## my_beers 0.0.15 (Dec 29, 2019)
+
+* Upgraded Ruby version from 2.6.3 to 2.6.5
+* Bump a lot of gems
+* Fixed travis.yml
+* Fixed rubocop.yml
 
   *Marcelo Toledo*
 
