@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Styles', type: :request do
+describe 'Styles', type: :request do
   before do
     create(:user, email: 'guest@email.com', password: '12345678', role: 'guest')
   end
@@ -15,7 +15,8 @@ RSpec.describe 'Styles', type: :request do
     # Note `basic_credentials` is a custom helper to credentials request
     before do
       create_list(:style, 15)
-      get '/styles', headers: basic_credentials('guest@email.com', '12345678')
+      get styles_path,
+          headers: basic_credentials('guest@email.com', '12345678')
     end
 
     it 'returns styles' do
@@ -24,39 +25,30 @@ RSpec.describe 'Styles', type: :request do
       expect(json.size).to eq 10
     end
 
-    it 'returns status code 200' do
-      expect(response).to have_http_status :ok
-    end
+    it { expect(response).to have_http_status :ok }
   end
 
   # Test suite for GET /styles/:id (show)
   describe 'GET /styles/:id' do
     before do
-      get "/styles/#{style_id}",
+      get style_path(style_id),
           headers: basic_credentials('guest@email.com', '12345678')
     end
 
     context 'when the record exists' do
       it 'returns the style' do
         expect(json).not_to be_empty
-        expect(json['id']).to eq style_id
+        expect(json[:id]).to eq style_id
       end
 
-      it 'returns status code 200' do
-        expect(response).to have_http_status :ok
-      end
+      it { expect(response).to have_http_status :ok }
     end
 
     context 'when the record does not exist' do
       let(:style_id) { 100 }
 
-      it 'returns status code 404' do
-        expect(response).to have_http_status :not_found
-      end
-
-      it 'returns a not found message' do
-        expect(response.body).to match(/Couldn't find Style/)
-      end
+      it { expect(response).to have_http_status :not_found }
+      it { expect(response.body).to match(/Couldn't find Style/) }
     end
   end
 
@@ -77,31 +69,27 @@ RSpec.describe 'Styles', type: :request do
 
     context 'when the request is valid' do
       before do
-        post '/styles',
+        post styles_path,
              params: valid_attributes,
              headers: basic_credentials(user.email, user.password)
       end
 
       it 'creates a style' do
-        expect(json['name']).to eq 'German-Style Schwarzbier'
-        expect(json['school_brewery']).to eq 'German'
+        expect(json[:name]).to eq 'German-Style Schwarzbier'
+        expect(json[:school_brewery]).to eq 'German'
       end
 
-      it 'returns status code 201' do
-        expect(response).to have_http_status :created
-      end
+      it { expect(response).to have_http_status :created }
     end
 
     context 'when the request is invalid' do
       before do
-        post '/styles',
+        post styles_path,
              params: { name: 'Foobar' },
              headers: basic_credentials(user.email, user.password)
       end
 
-      it 'returns status code 422' do
-        expect(response).to have_http_status :unprocessable_entity
-      end
+      it { expect(response).to have_http_status :unprocessable_entity }
 
       it 'returns a validation failure message' do
         expect(response.body).
@@ -111,14 +99,12 @@ RSpec.describe 'Styles', type: :request do
 
     context 'when the user is unauthorized' do
       before do
-        post '/styles',
+        post styles_path,
              params: valid_attributes,
              headers: basic_credentials('other@email.com', '00000000')
       end
 
-      it 'returns status code 401' do
-        expect(response).to have_http_status :unauthorized
-      end
+      it { expect(response).to have_http_status :unauthorized }
     end
   end
 
@@ -134,7 +120,7 @@ RSpec.describe 'Styles', type: :request do
 
     context 'when the record exists' do
       before do
-        put "/styles/#{style.id}",
+        put style_path(style.id),
             params: valid_attributes,
             headers: basic_credentials(owner.email, owner.password)
       end
@@ -145,22 +131,19 @@ RSpec.describe 'Styles', type: :request do
         expect(style.name).to eq new_style_name
       end
 
-      it 'returns status code 204' do
-        expect(response).to have_http_status :no_content
-      end
+      it { expect(response).to have_http_status :no_content }
     end
 
     context 'when user is unauthorized' do
       let(:user) { create(:user, password: '12345678', role: 'default') }
       let(:style) { create(:style) }
       let(:request) do
-        delete "/styles/#{style.id}",
-               headers: basic_credentials(user.email, user.password)
+        put style_path(style.id),
+            params: valid_attributes,
+            headers: basic_credentials(user.email, user.password)
       end
 
-      it 'returns AccessDenied' do
-        expect { request }.to raise_error(CanCan::AccessDenied)
-      end
+      it { expect { request }.to raise_error(CanCan::AccessDenied) }
     end
   end
 
@@ -173,35 +156,11 @@ RSpec.describe 'Styles', type: :request do
       end
 
       before do
-        delete "/styles/#{style_id}",
+        delete style_path(style_id),
                headers: basic_credentials(admin.email, admin.password)
       end
 
-      it 'returns status code 204' do
-        expect(response).to have_http_status :no_content
-      end
-    end
-
-    context 'when the record does not exist' do
-      let(:style_id) { 100 }
-
-      let(:admin) do
-        create(:user, email: 'admin@email.com', password: '12345678',
-                      role: 'admin')
-      end
-
-      before do
-        delete "/styles/#{style_id}",
-               headers: basic_credentials(admin.email, admin.password)
-      end
-
-      it 'returns status code 404' do
-        expect(response).to have_http_status :not_found
-      end
-
-      it 'returns a not found message' do
-        expect(response.body).to match(/Couldn't find Style/)
-      end
+      it { expect(response).to have_http_status :no_content }
     end
 
     context 'when the user is owner' do
@@ -212,7 +171,7 @@ RSpec.describe 'Styles', type: :request do
       let(:style) { create(:style, user: owner) }
 
       before do
-        delete "/styles/#{style.id}",
+        delete style_path(style.id),
                headers: basic_credentials(owner.email, owner.password)
       end
 
@@ -226,17 +185,12 @@ RSpec.describe 'Styles', type: :request do
       let(:user) { create(:user, password: '12345678', role: 'default') }
 
       before do
-        delete '/styles/5000',
+        delete style_path(5000),
                headers: basic_credentials(user.email, user.password)
       end
 
-      it 'returns status code 404' do
-        expect(response).to have_http_status :not_found
-      end
-
-      it 'returns a not found message' do
-        expect(response.body).to match(/Couldn't find Style/)
-      end
+      it { expect(response).to have_http_status :not_found }
+      it { expect(response.body).to match(/Couldn't find Style/) }
     end
   end
 end
