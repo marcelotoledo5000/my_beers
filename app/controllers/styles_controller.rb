@@ -11,7 +11,7 @@ class StylesController < ApplicationController
 
   # GET /styles/:id
   def show
-    json_response(@style)
+    json_response(set_style)
   end
 
   # POST /styles
@@ -21,13 +21,13 @@ class StylesController < ApplicationController
 
   # PUT /styles/:id
   def update
-    @style.update(style_params)
+    set_style.update(style_params)
     head :no_content
   end
 
   # DELETE /styles/:id
   def destroy
-    @style.destroy
+    set_style.destroy
     head :no_content
   end
 

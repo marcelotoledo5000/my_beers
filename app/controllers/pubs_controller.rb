@@ -11,7 +11,7 @@ class PubsController < ApplicationController
 
   # GET /pubs/:id
   def show
-    json_response(@pub)
+    json_response(set_pub)
   end
 
   # POST /pubs
@@ -21,13 +21,13 @@ class PubsController < ApplicationController
 
   # PUT /pubs/:id
   def update
-    @pub.update(pub_params)
+    set_pub.update(pub_params)
     head :no_content
   end
 
   # DELETE /pubs/:id
   def destroy
-    @pub.destroy
+    set_pub.destroy
     head :no_content
   end
 

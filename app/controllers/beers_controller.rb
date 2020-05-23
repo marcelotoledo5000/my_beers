@@ -11,7 +11,7 @@ class BeersController < ApplicationController
 
   # GET /beers/:id
   def show
-    json_response(@beer)
+    json_response(set_beer)
   end
 
   # POST /beers
@@ -21,13 +21,13 @@ class BeersController < ApplicationController
 
   # PUT /beers/:id
   def update
-    @beer.update(beer_params)
+    set_beer.update(beer_params)
     head :no_content
   end
 
   # DELETE /beers/:id
   def destroy
-    @beer.destroy
+    set_beer.destroy
     head :no_content
   end
 
