@@ -1,8 +1,6 @@
 # **MyBeers**
 
-[![Build Status](https://travis-ci.com/marcelotoledo5000/my_beers.svg?branch=master)](https://travis-ci.com/marcelotoledo5000/my_beers)
-[![Maintainability](https://api.codeclimate.com/v1/badges/ae4ce2a36d05fb5fcabf/maintainability)](https://codeclimate.com/github/marcelotoledo5000/my_beers/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/ae4ce2a36d05fb5fcabf/test_coverage)](https://codeclimate.com/github/marcelotoledo5000/my_beers/test_coverage)
+[![codebeat badge][codebeat-badge]][codebeat] [![Maintainability][codeclimate-badge-maintainability]][codeclimate-maintainability] [![Test Coverage][badge-coverage]][coverage] [![Build Status][travis-badge]][travis] [![Ruby][Github-Actions]][Github]
 
 ## About this project
 
@@ -363,3 +361,23 @@ Response:
 - Build a CRUD web app (with login) that consumes the API
 - Change http basic auth to JWT
 - Deploy on Heroku (both apps: back-end and front-end)
+
+## Contributing
+
+My Beers is open source, and we are grateful for
+[everyone][contributors] who have contributed so far or want to start.
+
+[codeclimate-badge-maintainability]: https://api.codeclimate.com/v1/badges/ae4ce2a36d05fb5fcabf/maintainability
+[codeclimate-maintainability]: https://codeclimate.com/github/marcelotoledo5000/my_beers/maintainability
+
+[badge-coverage]: https://codecov.io/gh/marcelotoledo5000/my_beers/branch/master/graph/badge.svg
+[coverage]: https://codecov.io/gh/marcelotoledo5000/my_beers
+
+[travis-badge]: https://travis-ci.com/marcelotoledo5000/my_beers.svg?branch=master
+[travis]: https://travis-ci.com/marcelotoledo5000/my_beers
+
+[codebeat-badge]: https://codebeat.co/badges/764a1e80-cdba-4f9a-94d9-e82552cfc333
+[codebeat]: https://codebeat.co/projects/github-com-marcelotoledo5000-my_beers-master
+
+[Github-Actions]: https://github.com/marcelotoledo5000/my_beers/workflows/Ruby/badge.svg
+[Github]: https://github.com/marcelotoledo5000/my_beers/workflows/Ruby/badge.svg
