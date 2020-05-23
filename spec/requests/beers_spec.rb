@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Beers', type: :request do
+describe 'Beers', type: :request do
   before do
     create(:user, email: 'guest@email.com', password: '12345678', role: 'guest')
   end
@@ -15,7 +15,7 @@ RSpec.describe 'Beers', type: :request do
     # Note `basic_credentials` is a custom helper to credentials request
     before do
       create_list(:beer, 15)
-      get '/beers', headers: basic_credentials('guest@email.com', '12345678')
+      get beers_path, headers: basic_credentials('guest@email.com', '12345678')
     end
 
     it 'returns beers' do
@@ -24,39 +24,30 @@ RSpec.describe 'Beers', type: :request do
       expect(json.size).to eq 10
     end
 
-    it 'returns status code 200' do
-      expect(response).to have_http_status :ok
-    end
+    it { expect(response).to have_http_status :ok }
   end
 
   # Test suite for GET /beers/:id (show)
   describe 'GET /beers/:id' do
     before do
-      get "/beers/#{beer_id}",
+      get beer_path(beer_id),
           headers: basic_credentials('guest@email.com', '12345678')
     end
 
     context 'when the record exists' do
       it 'returns the beer' do
         expect(json).not_to be_empty
-        expect(json['id']).to eq beer_id
+        expect(json[:id]).to eq beer_id
       end
 
-      it 'returns status code 200' do
-        expect(response).to have_http_status :ok
-      end
+      it { expect(response).to have_http_status :ok }
     end
 
     context 'when the record does not exist' do
       let(:beer_id) { 100 }
 
-      it 'returns status code 404' do
-        expect(response).to have_http_status :not_found
-      end
-
-      it 'returns a not found message' do
-        expect(response.body).to match(/Couldn't find Beer/)
-      end
+      it { expect(response).to have_http_status :not_found }
+      it { expect(response.body).to match(/Couldn't find Beer/) }
     end
   end
 
@@ -77,7 +68,6 @@ RSpec.describe 'Beers', type: :request do
              name: 'American-Style Imperial Stout',
              school_brewery: 'American', user_id: user.id)
     end
-    # valid payload
     let(:valid_attributes) do
       {
         name: 'KBS',
@@ -93,34 +83,31 @@ RSpec.describe 'Beers', type: :request do
 
     context 'when the request is valid' do
       before do
-        post '/beers', params: valid_attributes,
-                       headers: basic_credentials('user@email.com', '12345678')
+        post beers_path,
+             params: valid_attributes,
+             headers: basic_credentials('user@email.com', '12345678')
       end
 
       it 'creates a beer' do
-        expect(json['name']).to eq 'KBS'
-        expect(json['abv']).to eq '11.9%'
-        expect(json['ibu']).to eq '70'
-        expect(json['nationality']).to eq 'American'
-        expect(json['brewery']).to eq 'Founders'
-        expect(json['description']).to eq msg
+        expect(json[:name]).to eq 'KBS'
+        expect(json[:abv]).to eq '11.9%'
+        expect(json[:ibu]).to eq '70'
+        expect(json[:nationality]).to eq 'American'
+        expect(json[:brewery]).to eq 'Founders'
+        expect(json[:description]).to eq msg
       end
 
-      it 'returns status code 201' do
-        expect(response).to have_http_status :created
-      end
+      it { expect(response).to have_http_status :created }
     end
 
     context 'when the request is invalid' do
       before do
-        post '/beers',
+        post beers_path,
              params: { name: 'Foobar' },
              headers: basic_credentials(user.email, user.password)
       end
 
-      it 'returns status code 422' do
-        expect(response).to have_http_status :unprocessable_entity
-      end
+      it { expect(response).to have_http_status :unprocessable_entity }
 
       it 'returns a validation failure message' do
         expect(response.body).
@@ -130,14 +117,12 @@ RSpec.describe 'Beers', type: :request do
 
     context 'when the user is unauthorized' do
       before do
-        post '/beers',
+        post beers_path,
              params: valid_attributes,
              headers: basic_credentials('user@email.com', '00000000')
       end
 
-      it 'returns status code 401' do
-        expect(response).to have_http_status :unauthorized
-      end
+      it { expect(response).to have_http_status :unauthorized }
     end
   end
 
@@ -153,7 +138,7 @@ RSpec.describe 'Beers', type: :request do
 
     context 'when the record exists' do
       before do
-        put "/beers/#{beer.id}",
+        put beer_path(beer.id),
             params: valid_attributes,
             headers: basic_credentials(owner.email, owner.password)
       end
@@ -164,22 +149,19 @@ RSpec.describe 'Beers', type: :request do
         expect(beer.name).to eq new_beer_name
       end
 
-      it 'returns status code 204' do
-        expect(response).to have_http_status :no_content
-      end
+      it { expect(response).to have_http_status :no_content }
     end
 
     context 'when user is unauthorized' do
       let(:user) { create(:user, password: '12345678', role: 'default') }
       let(:beer) { create(:beer) }
       let(:request) do
-        delete "/beers/#{beer.id}",
-               headers: basic_credentials(user.email, user.password)
+        put beer_path(beer.id),
+            params: valid_attributes,
+            headers: basic_credentials(user.email, user.password)
       end
 
-      it 'returns AccessDenied' do
-        expect { request }.to raise_error(CanCan::AccessDenied)
-      end
+      it { expect { request }.to raise_error(CanCan::AccessDenied) }
     end
   end
 
@@ -192,36 +174,11 @@ RSpec.describe 'Beers', type: :request do
       end
 
       before do
-        delete "/beers/#{beer_id}",
+        delete beer_path(beer_id),
                headers: basic_credentials(admin.email, admin.password)
       end
 
-      it 'returns status code 204' do
-        expect(response).to have_http_status :no_content
-      end
-    end
-
-    context 'when the record does not exist' do
-      let(:beer_id) { 100 }
-
-      let(:admin) do
-        create(:user, email: 'admin@email.com', password: '12345678',
-                      role: 'admin')
-      end
-
-      before do
-        delete "/beers/#{beer_id}",
-               headers: basic_credentials(admin.email, admin.password)
-      end
-
-      it 'returns status code 404' do
-        expect(response).to have_http_status :not_found
-      end
-
-      it 'returns a not found message' do
-        expect(response.body).
-          to match(/Couldn't find Beer with/)
-      end
+      it { expect(response).to have_http_status :no_content }
     end
 
     context 'when the user is owner' do
@@ -232,7 +189,7 @@ RSpec.describe 'Beers', type: :request do
       let(:beer) { create(:beer, user: owner) }
 
       before do
-        delete "/beers/#{beer.id}",
+        delete beer_path(beer.id),
                headers: basic_credentials(owner.email, owner.password)
       end
 
@@ -246,18 +203,12 @@ RSpec.describe 'Beers', type: :request do
       let(:user) { create(:user, password: '12345678', role: 'default') }
 
       before do
-        delete '/beers/5000',
+        delete beer_path(5000),
                headers: basic_credentials(user.email, user.password)
       end
 
-      it 'returns status code 404' do
-        expect(response).to have_http_status :not_found
-      end
-
-      it 'returns a not found message' do
-        expect(response.body).
-          to match(/Couldn't find Beer with/)
-      end
+      it { expect(response).to have_http_status :not_found }
+      it { expect(response.body).to match(/Couldn't find Beer with/) }
     end
   end
 end

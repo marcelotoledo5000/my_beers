@@ -5,7 +5,7 @@ require 'cancan/matchers'
 
 # If you are testing the Ability class through RSpec there is a be_able_to
 # matcher available. This checks if the can? method returns true.
-RSpec.describe Ability, type: :model do
+describe Ability, type: :model do
   describe 'abilities' do
     subject(:ability) { described_class.new(user) }
 
