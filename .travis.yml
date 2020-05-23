@@ -26,7 +26,7 @@ language: ruby
 cache: bundler
 
 rvm:
-  - 2.6.5
+  - 2.7.0
 
 script:
   - bundle exec rails db:reset db:setup db:migrate

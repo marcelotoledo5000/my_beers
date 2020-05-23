@@ -23,13 +23,13 @@ This project is a example to use:
 ## Technical Informations and dependencies
 
 ``` code
-* The Ruby language   # version 2.6.5
+* The Ruby language   # version 2.7.0
 * The Rails gem       # version 6.0
 * RSpec               # version 4.0.0
 * Rubocop             # version 0.78.0
 * PostgreSQL          # version 10
-* Docker              # version 19.03.5-ce
-* Docker Compose      # version 1.25.0
+* Docker              # version 19.03.8-ce
+* Docker Compose      # version 1.25.5
 ```
 
 ## To use
