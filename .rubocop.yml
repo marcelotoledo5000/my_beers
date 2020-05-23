@@ -5,6 +5,7 @@ require:
 
 Style/Documentation:
   Enabled: false
+
 Rails:
   Enabled: true
 
@@ -14,24 +15,37 @@ AllCops:
     - 'Rakefile'
     - 'config/**/*'
     - 'bin/**/*'
-    - 'node_modules/**/*'
     - 'script/**/*'
     - 'spec/rails_helper.rb'
     - 'spec/spec_helper.rb'
-    - 'vendor/**/*.rb'
     - 'vendor/**/*'
   UseCache: false
   TargetRailsVersion: 6.0
-  TargetRubyVersion: 2.6.5
+  TargetRubyVersion: 2.7.0
+
 Metrics/BlockLength:
   ExcludedMethods: ['describe', 'context', 'feature', 'scenario', 'let']
-Style/FrozenStringLiteralComment:
-  Enabled: true
+
 Style/ClassAndModuleChildren:
   EnforcedStyle: compact
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
 Layout/DotPosition:
   EnforcedStyle: trailing
+
+Capybara/FeatureMethods:
+  EnabledMethods: ['feature', 'scenario', 'xscenario','given', 'background']
+
 RSpec/ExampleLength:
   Enabled: false
+
 RSpec/MultipleExpectations:
   Enabled: false
