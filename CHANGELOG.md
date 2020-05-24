@@ -1,4 +1,10 @@
-# my_beers 0.1.1 (May 23, 2020)
+# my_beers 0.1.2 (May 24, 2020)
+
+* Fix complexity reported by Codebeat
+
+  *Marcelo Toledo*
+
+## my_beers 0.1.1 (May 23, 2020)
 
 * Update rubocop.yml
 * Organize and setup new cops
