@@ -1,4 +1,11 @@
-# my_beers 0.1.0 (May 23, 2020)
+# my_beers 0.1.1 (May 23, 2020)
+
+* Update rubocop.yml
+* Organize and setup new cops
+
+  *Marcelo Toledo*
+
+## my_beers 0.1.0 (May 23, 2020)
 
 * Upgraded Ruby version from 2.6.5 to 2.7.0
 * Bump a lot of gems
