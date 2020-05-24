@@ -23,15 +23,9 @@ class Ability
   end
 
   def can_do_it(user, action)
-    can action, Pub do |pub|
-      pub&.user == user
-    end
-    can action, Style do |style|
-      style&.user == user
-    end
-    can action, Beer do |beer|
-      beer&.user == user
-    end
+    can action, Pub, user_id: user.id
+    can action, Style, user_id: user.id
+    can action, Beer, user_id: user.id
   end
 
   def can_execute(user)
