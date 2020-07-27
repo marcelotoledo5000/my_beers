@@ -1,4 +1,10 @@
-# my_beers 0.1.2 (May 24, 2020)
+# my_beers 0.1.3 (Jul 26, 2020)
+
+* Bump a lot of gems
+
+  *Marcelo Toledo*
+
+## my_beers 0.1.2 (May 24, 2020)
 
 * Fix complexity reported by Codebeat
 
