@@ -2,6 +2,7 @@
 
 echo "Installing bundler"
 gem install bundler
+bundle update --bundler
 
 echo "Installing gems"
 bundle check || bundle install
