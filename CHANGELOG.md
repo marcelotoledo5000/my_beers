@@ -1,4 +1,11 @@
-# my_beers 0.1.3 (Jul 26, 2020)
+# my_beers 0.1.4 (Feb 12, 2022)
+
+* Fix vulnerabilities
+* Bump a lot of gems
+
+  *Marcelo Toledo*
+
+## my_beers 0.1.3 (Jul 26, 2020)
 
 * Bump a lot of gems
 
