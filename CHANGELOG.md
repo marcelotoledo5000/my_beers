@@ -2,6 +2,8 @@
 
 * Fix vulnerabilities
 * Bump a lot of gems
+* Remove travis-ci
+* Remove CodeClimate
 
   *Marcelo Toledo*
 
